@@ -56,9 +56,11 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 ### *_USERS:*
 
 ### Creating IAM User :
-![Pasted image 20221019205435.png]
+![Pasted image 20221019205435](https://user-images.githubusercontent.com/109697567/200852774-85c5e4d5-eef3-4ce5-bd19-b214dd05be7e.png)
+
 ### Setting Permissions or adding the user to a Group :
-![[Pasted image 20221019224718.png]]
+![Pasted image 20221019224718](https://user-images.githubusercontent.com/109697567/200853212-ea5ee1db-edfe-4781-9b56-668829901943.png)
+
 ### User details
 ![[My Video.gif]]
 ### Access Key
