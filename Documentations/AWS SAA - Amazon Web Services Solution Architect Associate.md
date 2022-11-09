@@ -61,22 +61,21 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 ### Setting Permissions or adding the user to a Group :
 ![Pasted image 20221019224718](https://user-images.githubusercontent.com/109697567/200853212-ea5ee1db-edfe-4781-9b56-668829901943.png)
 
-### User details
-![Uploading My Video.gif…]()
 ### Access Key
 - A secret key that is download as .csv file, to login using it instead of username & password.
 - If the access key or the file is lost, the access can b denied from the console, by selecting status to inactive.
-![[Pasted image 20221020014900.png]]
+![Pasted image 20221020014900](https://user-images.githubusercontent.com/109697567/200855856-2b1660ce-ec28-4190-9f75-5929b43136b6.png)
+
 ### *_ACCOUNT SETTINGS:*
 
 ### Password Policy
 Having restrictions over passwords in the system
-![[Pasted image 20221020015357.png]]
-![[Pasted image 20221020015627.png]]
+![Pasted image 20221020015357](https://user-images.githubusercontent.com/109697567/200855949-dab439c2-4ea5-4429-aa60-c8d9bd49ad10.png)
+![Pasted image 20221020015627](https://user-images.githubusercontent.com/109697567/200856160-2c05dff0-7e09-4c78-81a7-dfb8f0473af3.png)
 *Note:* When applying a new password policy, only new users will be affected, & the old users will only be affected after password expiry "Enable passwords expiration".
 
 ### IAM Best Practice
-![[Pasted image 20221020232823.png]]
+![Pasted image 20221020232823](https://user-images.githubusercontent.com/109697567/200856466-5ba41a25-b03d-4a30-90b4-052604d218dc.png)
 
 ## Creating Billing Alarms
 Using the Root User, limiting bills to as low as 1$ & setting Billing alarms can be done through the Budgets tab in the Billing Dashboard.
@@ -107,16 +106,16 @@ AWS provides an implied virtual outer for the VPC, connecting all subnets to one
   Only one VGW can be assigned to a VPC at a time.
 - ##### Security Groups
 - ##### Network Access Control Lists "Network ACL"
-![[Pasted image 20221025014904.png]]
+![Pasted image 20221025014904](https://user-images.githubusercontent.com/109697567/200856677-0264d399-5873-4213-a96f-029d700de759.png)
 ### VPC Console
 By default there will a VPC on each region, this can be viewed from the VPC dashboard. 
 From the VPC Console You can manage & view the info of current VPCs or create new VPCs, & manage all the VPC components listed before.
-![[Pasted image 20221024230911.png]]
+![Pasted image 20221024230911](https://user-images.githubusercontent.com/109697567/200856768-a6fb0c84-0b09-42a5-a9b5-cddc7a060af1.png)
 
 ## Public Subnet vs Private Subnet
 Public Subnet is a subnet created in a VPC with IGW attached and its associated routing table contains a default route pointing at the VPC's IGW, meaning it has internet access, while private subnets doesn't have internet access.
 Public Subnets is used for the applications & services that will need internet access, while Private Subnets is mainly for databases.
-![[Pasted image 20221031004509.png]]
+![Pasted image 20221031004509](https://user-images.githubusercontent.com/109697567/200856868-6a73eec2-b1b4-4fe3-b9a2-51e7f8099f82.png)
 
 ## Hybrid Cloud Connectivity Options in AWS
 ##### 1- VPN Connection
@@ -157,25 +156,25 @@ EC2 is launched in a subnet in the availability zone.
 ##### 2- EC2 Instance Connect "Browser Based SSH Connection"
 
 ###### EC2 connecting by SSH client steps are shown in the console after trying to connect:
-![[Pasted image 20221031012059.png]]
+![Pasted image 20221031012059](https://user-images.githubusercontent.com/109697567/200857121-427a5bf5-ea49-4a1c-a9c6-dc11dd727afd.png)
 
-![[Pasted image 20221031012400.png]]
+![Pasted image 20221031012400](https://user-images.githubusercontent.com/109697567/200857171-dc7050f2-83b0-498e-a5cb-21df72a4573a.png)
 
 ### Private, Public & Elastic IP Addresses 
-![[Pasted image 20221031014312.png]]
+![Pasted image 20221031014312](https://user-images.githubusercontent.com/109697567/200857220-2cb7281b-5258-439a-97f0-d2ef243fde0b.png)
 *Note:* EIP has a soft limit of 5 per VPC "Can be changed by sending a ticket"
 
 ### NAT - Network Address Translation.
 **No EC2 instance will launch without having a Private IP Address.** However it needs either Public IP Address or Elastic IP Address to simply be able to connect to it, as the EC2 is logged onto through the internet as every AWS service.
 The EC2 Private IP Address is translated to its corresponding Public IP Address by NAT - Network Address Translation.
-![[Pasted image 20221031014808.png]]
+![Pasted image 20221031014808](https://user-images.githubusercontent.com/109697567/200857316-159c1a72-19ee-44a3-afb3-e9a5a1bbdd66.png)
 EIP is mostly used to hold a specific IP for firewalls, so it is referred to as **whitelisting**.
 
 ### Monolithic vs Multi Tier, & Microservices
 Monolithic is using one instance for the whole application & the entire application is built as a single code project, making it harder to scale & troubleshoot. It's more advisable to use multi tier instances for multiple parts of the project or the application.
-![[Pasted image 20221103010515.png]]
+![Pasted image 20221103010515](https://user-images.githubusercontent.com/109697567/200857450-e74b170d-9773-4cea-a7f8-5d19f298b6d5.png)
 Microservices approach is dividing the tiers even more to be able to launch it on containers instead of VMs, as it's has more efficiency & speed.
-![[Pasted image 20221103041823.png]]
+![Pasted image 20221103041823](https://user-images.githubusercontent.com/109697567/200857510-5c6185df-2b3a-4976-a22f-bdaf49a0d814.png)
 
 ## Security Groups
 - Security Groups are virtual firewalls applied on the ENI "Elastic Network Interface" of the EC2 instance.
