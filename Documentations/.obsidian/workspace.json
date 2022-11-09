@@ -1,0 +1,145 @@
+{
+  "main": {
+    "id": "fa132899b930aa88",
+    "type": "split",
+    "children": [
+      {
+        "id": "ba82ce5027364d4c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "02501efe9cb9ac34",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "AWS SAA - Amazon Web Services Solution Architect Associate.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "afe5f495c3299290",
+    "type": "split",
+    "children": [
+      {
+        "id": "08e6f3d1aa21220f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ab4cbcbc77a63f91",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "fab0fbd72325f7ee",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "08c2b8d6497c00db",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a684798ea81dcc42",
+    "type": "split",
+    "children": [
+      {
+        "id": "8babc0425c64fef6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d0308a8012eb957f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "AWS SAA - Amazon Web Services Solution Architect Associate.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "41374af9125d3f35",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "AWS SAA - Amazon Web Services Solution Architect Associate.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "171a3bf5edcff497",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6cd6ba6e4c664e2d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "AWS SAA - Amazon Web Services Solution Architect Associate.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "02501efe9cb9ac34",
+  "lastOpenFiles": [
+    "Pasted image 20221015212645.png.md",
+    "AWS SAA - Amazon Web Services Solution Architect Associate.md",
+    "Pasted image 20221016203143.png.md"
+  ]
+}
