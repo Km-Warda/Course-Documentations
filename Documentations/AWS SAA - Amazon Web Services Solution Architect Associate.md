@@ -56,7 +56,7 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 ### *_USERS:*
 
 ### Creating IAM User :
-![[Pasted image 20221019205435.png]]
+![Pasted image 20221019205435.png]
 ### Setting Permissions or adding the user to a Group :
 ![[Pasted image 20221019224718.png]]
 ### User details
