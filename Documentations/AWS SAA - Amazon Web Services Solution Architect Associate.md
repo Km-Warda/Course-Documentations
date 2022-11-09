@@ -268,7 +268,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - By default all requests are denied for an identity, an explicit allow overrides this.
 - an explicit deny overrides all allows.
 - Policies are stored as JSON documents in AWS.
-![[Pasted image 20221102233310.png]]
+![Pasted image 20221102233310](https://user-images.githubusercontent.com/109697567/200859226-fd4774c1-acc6-4a1d-8b45-1ac2bac1e58e.png)
 
 ## SQS - Amazon Simple Queue Service (Message Queue Concept)
 - Message Queues provide asynchronous communication & coordination for the application components.
@@ -276,7 +276,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - this allows scaling different parts of the project & increase its reliability.
 - Message sending Tiers is called Message Produces, while message receiving Tiers is called Message Consumers.
 - Using SQS is referred to as Decoupling process, as it decouples different tiers. 
-![[Pasted image 20221103012822.png]]
+![Pasted image 20221103012822](https://user-images.githubusercontent.com/109697567/200859377-e23e3e7a-5d3e-4faf-9ea3-c45a0f94bf51.png)
 
 ## SNS - Amazon Simple Notification Service
 - SNS is a fast & fully managed notification service.
@@ -286,21 +286,21 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - Subscribers can be users, emails, SMSs, services & many other formats.
 - SNS is reliable & stores multiple data copies across multiple AZs.
 - SNS supports HTTPS in-transit.
-![[Pasted image 20221103014434.png]]
+![Pasted image 20221103014434](https://user-images.githubusercontent.com/109697567/200859449-f4fb80d3-3c56-4e0f-8234-26952278915b.png)
 **Note:** Message size in SQS & SNS shouldn't exceed 256 Kbytes, indicating that the messages either in queue "SQS" or instant "SNS" won't include the data or the object itself, only a message about the data.
 
 ## CDN - Content Delivery Network (Amazon CloudFront)
 - Amazon CloudFront Provides highly available cache to compensate using multiple resources for less latency "**ex:** Accessing data from S3 buckets through different countries"
 - using CloudFront is more economically efficient than using different Buckets.
 - These Cache Locations are called Edge Locations.
-![[Pasted image 20221103030233.png]]
+![Pasted image 20221103030233](https://user-images.githubusercontent.com/109697567/200859517-5740e0c2-2478-4a47-9fc4-df78dd78be47.png)
 
 ## Amazon Route 53
 - Amazon Route 53 is AWS's DNS.
 - Acts similar to the Public DNS for example.
 - It supports public hosted zones for internet facing workload/applications, or private hosed zones for private workloads/on VPC applications.
 - The DNS that have the domain name is called the Authoritative of the domain name.
-![[Pasted image 20221103032121.png]]
+![Pasted image 20221103032121](https://user-images.githubusercontent.com/109697567/200859583-e324ab9d-6d2a-4a78-ae6d-e2d24956b668.png)
 
 ## OLTP & OLAP
 #### OLTP - On-Line Transactional Processing
@@ -324,14 +324,14 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - High availability describes the availability of the application, while Fault tolerance describes how much the application performance is affected by faults.
 - High availability is done by Load Balancers.
 - Higher Fault tolerance means higher cost, due to increase of resources.
-![[Pasted image 20221103042616.png]]
+![Pasted image 20221103042616](https://user-images.githubusercontent.com/109697567/200859632-0ad6166f-a411-4e40-9088-8b4c2930742d.png)
 
 ## Scalability & Elasticity
 - Scalability refers to system's ability to handle the growth of load by adding resources.
 - This scaling can be vertical scaling or horizontal scaling.
 - Elasticity describes the system ability to provision & deprovision resources **automatically** to ensure that resources matches the need.
 - Auto scaling groups can be configured for EC2 instances
-![[Pasted image 20221103043119.png]]
+![Pasted image 20221103043119](https://user-images.githubusercontent.com/109697567/200859709-cc84e90c-9afd-4851-90fa-87e2878137ac.png)
 
 ## CloudWatch
 - CloudWatch is the center of real time monitoring & visibility in AWS.
@@ -375,7 +375,7 @@ RPO is the acceptable data to be lost after the restoration point "Backup point"
 - #### RTO - Recovery Time Objective
 RTO is the acceptable time taken after the disaster to get active again & go back to last restoration point taken.
 - RPO & RTO determines the cost of Disaster Recovery, less RPO & RTO means more cost with more efficient Disaster Recovery.
-![[Pasted image 20221109072525.png]]
+![Pasted image 20221109072525](https://user-images.githubusercontent.com/109697567/200859792-7bc9d1b9-29e9-4bd4-885e-c7f6424986fe.png)
 AWS Approach in Disaster Recovery could be explained as having a DR Site fore disaster recovery, & it should be in a different region or away form the main production site. If the production went down, the cloud service is redirected to the DR Site, & it's advised to be automated redirection. 
 
 ### Disaster Recovery Approaches
@@ -392,7 +392,7 @@ Graded from lower cost & recovery speed to the higher cost & recovery speed as f
 ##### 4- Multi Site
 - Keep full running version of the production environment.
 - Active/Active Sites.
-![[Pasted image 20221109104352.png]]
+![Pasted image 20221109104352](https://user-images.githubusercontent.com/109697567/200860019-25a7675d-483e-4e56-a3ec-b6e87f6972f8.png)
 
 # Part 2: VPC Deep Dive
 ## NAT - Network Address Translation 
