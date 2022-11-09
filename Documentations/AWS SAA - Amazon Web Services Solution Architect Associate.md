@@ -23,7 +23,8 @@ Using a specific cloud vendor in a major way & concentrating on its services mak
 
 
 ## AWS Cloud Services
-![[Pasted image 20221016203143.png]]
+![Pasted image 20221016203143](https://user-images.githubusercontent.com/109697567/200851567-a14762b4-7de7-4781-a033-4b74541c12f2.png)
+
 ## IAM - Identity & Access Management
 IAM allows creating & managing multiple identities, authentication & authorization for AWS account.
 So The same AWS account can have multiple users with different permissions, instead of only logging in as a ROOT User
