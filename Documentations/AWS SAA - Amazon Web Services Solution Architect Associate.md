@@ -4,7 +4,8 @@
 Using Cloud Servers provide much more efficiency than on-Premises data centers, regarding cost, reliability & time.
 ### - Public Cloud & Private Cloud
 Public cloud is Publicly shared among customers, while Private cloud is for only one customer
-![Profile icon](Pasted image 20221015212645.png)
+![Pasted image 20221109155939](https://user-images.githubusercontent.com/109697567/200851078-db999f92-50f4-4754-b526-a30fc7a2152a.png)
+
 ### - Hybrid cloud
 A mix between public cloud & on-premises Private Cloud, to provide privacy & security for specific services while the other services are on Public cloud.
 - It's a more complex solution as the organization has to manage multiple platforms.
