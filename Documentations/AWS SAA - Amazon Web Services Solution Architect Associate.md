@@ -61,7 +61,7 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 ### Setting Permissions or adding the user to a Group :
 ![Pasted image 20221019224718](https://user-images.githubusercontent.com/109697567/200853212-ea5ee1db-edfe-4781-9b56-668829901943.png)
 ### User details
-https://user-images.githubusercontent.com/109697567/201067385-5b63b599-a70c-4768-ac3e-505f0d7690b4.mp4
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/109697567/201072140-3fda1335-eda2-4cfa-bad3-67ec2ecbb131.gif)
 ### Access Key
 - A secret key that is download as .csv file, to login using it instead of username & password.
 - If the access key or the file is lost, the access can b denied from the console, by selecting status to inactive.
