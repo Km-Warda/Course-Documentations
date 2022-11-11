@@ -287,6 +287,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - Subscribers can be users, emails, SMSs, services & many other formats.
 - SNS is reliable & stores multiple data copies across multiple AZs.
 - SNS supports HTTPS in-transit.
+
 ![Pasted image 20221103014434](https://user-images.githubusercontent.com/109697567/200859449-f4fb80d3-3c56-4e0f-8234-26952278915b.png)
 **Note:** Message size in SQS & SNS shouldn't exceed 256 Kbytes, indicating that the messages either in queue "SQS" or instant "SNS" won't include the data or the object itself, only a message about the data.
 
