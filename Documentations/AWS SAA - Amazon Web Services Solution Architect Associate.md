@@ -30,27 +30,28 @@ IAM allows creating & managing multiple identities, authentication & authorizati
 So The same AWS account can have multiple users with different permissions, instead of only logging in as a ROOT User
 ### IAM Features:
 - Shared access to AWS account
-- Granular Permissions
+- Granular Permissions:
 	Specific & strict permissions as desired.
 - Secure access to AWS resources for AWS applications 
 - Multi-factor authentication
-- Identity Federation
+- Identity Federation:
 	The process of delegating a user authentication responsibility to a trusted external party. *ex:* Logging in by google authentication.
 - Identity information logs
-- PCI Compliance
+- PCI Compliance:
 	Credit Card Compliance.
 - Integrated with many AWS Services
 - Eventually Consistent details & permissions
 - Free to use
-- AWS STS "AWS Secure Token Service"
+- AWS STS "AWS Secure Token Service":
 	Temporary Sessions.
 
 ### IAM Identities
 - Federated Users
 - IAM User
 - IAM Group
-- IAM Role
-IAM Role is a set of permissions, acts as a badge for a determined temporary time "STS - Security Token Service".
+- IAM Role:
+	IAM Role is a set of permissions, acts as a badge for a determined temporary time "STS - Security Token Service".
+
 
 ### IAM Console
 ### *_USERS:*
@@ -64,7 +65,7 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/109697567/201072140-3fda1335-eda2-4cfa-bad3-67ec2ecbb131.gif)
 ### Access Key
 - A secret key that is download as .csv file, to login using it instead of username & password.
-- If the access key or the file is lost, the access can b denied from the console, by selecting status to inactive.
+- If the access key or the file is lost, the access can be denied from the console, by selecting status to inactive.
 ![Pasted image 20221020014900](https://user-images.githubusercontent.com/109697567/200855856-2b1660ce-ec28-4190-9f75-5929b43136b6.png)
 
 ### *_ACCOUNT SETTINGS:*
