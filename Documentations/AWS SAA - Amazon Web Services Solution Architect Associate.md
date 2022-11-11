@@ -73,6 +73,7 @@ IAM Role is a set of permissions, acts as a badge for a determined temporary tim
 Having restrictions over passwords in the system
 ![Pasted image 20221020015357](https://user-images.githubusercontent.com/109697567/200855949-dab439c2-4ea5-4429-aa60-c8d9bd49ad10.png)
 ![Pasted image 20221020015627](https://user-images.githubusercontent.com/109697567/200856160-2c05dff0-7e09-4c78-81a7-dfb8f0473af3.png)
+
 *Note:* When applying a new password policy, only new users will be affected, & the old users will only be affected after password expiry "Enable passwords expiration".
 
 ### IAM Best Practice
@@ -241,6 +242,7 @@ It's an *AWS managed* Key management service that allows customers to create & m
 Keys managed by AWS are known by the name of *aws/service_name* 
 **Example:** creating an EC2 instance & encrypting EBS Volume:
 ![Pasted image 20221101054012](https://user-images.githubusercontent.com/109697567/200858659-e183d1f7-f56d-43df-b2bd-fbb2a354adcb.png)
+
 **Note:**  AWS-managed CMKs have automatic key rotation of 3 years, while Customer-Managed CMKs have 1-year optional rotational period "If Chosen".
 
 ## AWS S3 -Simple Storage Service / Object Storage
@@ -269,6 +271,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - By default all requests are denied for an identity, an explicit allow overrides this.
 - an explicit deny overrides all allows.
 - Policies are stored as JSON documents in AWS.
+
 ![Pasted image 20221102233310](https://user-images.githubusercontent.com/109697567/200859226-fd4774c1-acc6-4a1d-8b45-1ac2bac1e58e.png)
 
 ## SQS - Amazon Simple Queue Service (Message Queue Concept)
@@ -289,6 +292,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - SNS supports HTTPS in-transit.
 
 ![Pasted image 20221103014434](https://user-images.githubusercontent.com/109697567/200859449-f4fb80d3-3c56-4e0f-8234-26952278915b.png)
+
 **Note:** Message size in SQS & SNS shouldn't exceed 256 Kbytes, indicating that the messages either in queue "SQS" or instant "SNS" won't include the data or the object itself, only a message about the data.
 
 ## CDN - Content Delivery Network (Amazon CloudFront)
@@ -333,6 +337,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - This scaling can be vertical scaling or horizontal scaling.
 - Elasticity describes the system ability to provision & deprovision resources **automatically** to ensure that resources matches the need.
 - Auto scaling groups can be configured for EC2 instances
+
 ![Pasted image 20221103043119](https://user-images.githubusercontent.com/109697567/200859709-cc84e90c-9afd-4851-90fa-87e2878137ac.png)
 
 ## CloudWatch
