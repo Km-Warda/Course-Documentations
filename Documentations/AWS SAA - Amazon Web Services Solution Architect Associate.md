@@ -435,7 +435,8 @@ The packet goes from the private subnet to the NAT instance/NAT Gateway in the p
 ###### 1- Creating NAT Instance
 - Create an ordinary EC2 instance, with a NAT instance image which can be found in **Community AMIs**. 
 - Make sure to add HTTP & HTTPS ports to the security group if it will be needed.
-- **A very important note** when creating a NAT instance is **disabling the Source/Destination Check**. This is because by default the EC2 instance can  work as a source or a distention but not as an intermediate stage, this is controlled by the Source/Destination Check. 
+- **A very important note** when creating a NAT instance is **disabling the Source/Destination Check**. This is because by default the EC2 instance can  work as a source or a distention but not as an intermediate stage, this is controlled by the Source/Destination Check.
+
 ![Pasted image 20221111063112](https://user-images.githubusercontent.com/109697567/204100954-f63dcd97-e914-42cd-8849-2316d47fc8fe.png)
 ###### 2- Logging in to a Private Subnet's EC2 Instance using NAT Instance
 - A private Subnet doesn't have internet access, so you can't access it remotely.
