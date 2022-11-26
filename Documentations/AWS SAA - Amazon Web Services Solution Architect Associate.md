@@ -473,7 +473,8 @@ Thus It's a regular EC2 Instance with Security Hardening "Strict & Heavy securit
 ###### Reverse Proxy Server
 it is a service that is used for caching. When accessing the application/website linked with a Reverse Proxy, the URL resolves to the R-proxy, filtering the traffic & then sending it to the application server, & it deals with the response from the application server the same way, caching the operation. So if the same request came again, it will response automatically as it's cached.
 
-## VPC Peering
+## Connecting VPCs together 
+### VPC Peering
 By default, VPCs cannot communicate directly with each other without using internet access(No Network between them). 
 VPC Peering connection allows routing between two VPCs.
 - Highly available & fully managed by AWS.
