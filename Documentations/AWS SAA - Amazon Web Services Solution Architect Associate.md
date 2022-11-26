@@ -403,4 +403,146 @@ Graded from lower cost & recovery speed to the higher cost & recovery speed as f
 ![Pasted image 20221109104352](https://user-images.githubusercontent.com/109697567/200860019-25a7675d-483e-4e56-a3ec-b6e87f6972f8.png)
 
 # Part 2: VPC Deep Dive
-## NAT - Network Address Translation 
+## NAT Deep Dive & NAT services 
+Suppose a scenario of which the EC2 in a private instance & need to update its data from an S3 Bucket, the bucket is accessible by a public IP on the internet, & same goes for all of AAWS Services. As the EC2 is in a private subnet it won't be able to connect to the S3 to get the update unless changed to a public subnet, removing the purpose which the EC2 is in a private subnet in the first place.. so the solution is refused.
+There are two NAT Services that can fix the issue proposed:
+#### 1- NAT Instance
+- Its an EC2 instance AMI, so it's fully managed & secured by the client.
+- NAT instance is launched in a public subnet.
+- The routing table of the private subnet requiring internet access should be given a default route pointing to the NAT Instance ID
+- The NAT instance has a translation table, having the source/destination IP & port, as well as the mapping IP & port.
+- All Ports in the translation table are from the ephemeral range.
+- The instance is given private or elastic IP address.
+- The Mapping IP is the translated public IP in the NAT translation table of the Private/Elastic IP Address in the public subnet.
+![Pasted image 20221110134611](https://user-images.githubusercontent.com/109697567/204100897-a689250c-5232-4226-ba0c-8676bb81b2e9.png)
+#### 2- NAT Gateway
+- NAT Gateway is a fully managed highly available service, scaling by up to 45 Gbps per gateway.
+- NAT Gateways work only with Elastic IP Addresses.
+- It cannot be associated with a security group.
+- More preferred than instances due to its high availability.
+- Although it's highly available, but it exists only in one availability zone.
+![Pasted image 20221110134611](https://user-images.githubusercontent.com/109697567/204100927-adc7e210-278b-4f18-9ee1-01c0f2cf8966.png)
+#### AZ Independent Architecture For High Availability
+Multiple NAT Gateways are deployed over multiple Availability Zones "one per each", & have the route table of the private subnets in each AZ to its NAT Gateway.
+So if a NAT Gateway went down the routing table redirects the packet to the other NAT Gateway in another AZ in the same network, & if an AZ went down, the other NAT Gateways keep functioning.
+![Pasted image 20221110144124](https://user-images.githubusercontent.com/109697567/204100940-24c8b5b4-fabf-4cd6-92f0-4e578c278c28.png)
+#### How they work:
+The packet goes from the private subnet to the NAT instance/NAT Gateway in the public subnet, which redirects it to the IGW with a new public IP from the translation table in the IGW, sending it over the internet.
+
+![Pasted image 20221110144738](https://user-images.githubusercontent.com/109697567/204100950-926f1638-67f8-4e06-93b3-84bbee21b5ee.png)
+
+#### Console Applications:
+###### 1- Creating NAT Instance
+- Create an ordinary EC2 instance, with a NAT instance image which can be found in **Community AMIs**. 
+- Make sure to add HTTP & HTTPS ports to the security group if it will be needed.
+- **A very important note** when creating a NAT instance is **disabling the Source/Destination Check**. This is because by default the EC2 instance can  work as a source or a distention but not as an intermediate stage, this is controlled by the Source/Destination Check. 
+![Pasted image 20221111063112](https://user-images.githubusercontent.com/109697567/204100954-f63dcd97-e914-42cd-8849-2316d47fc8fe.png)
+###### 2- Logging in to a Private Subnet's EC2 Instance using NAT Instance
+- A private Subnet doesn't have internet access, so you can't access it remotely.
+- To log in to a private subnet, log in to a NAT public instance & log in to the private one from it.
+- Remember to add the NAT ID to the private subnet route table, with destination 0.0.0.0/0
+- Access the Public EC2 instance then the Private one
+- Use command **yum update -y** to se if the instance will update or not, to test connectivity.
+![Pasted image 20221111073339](https://user-images.githubusercontent.com/109697567/204100966-cdc8b13a-ae18-4f6e-a83f-7b9c486ae0c9.png)
+###### 3- Creating NAT Gateway
+- Created from the VPC Console
+- Created with an Elastic IP Address
+- No Source/Destination Check, No Security Groups, etc.. As it's an AWS fully managed service
+###### 4- Logging in to a Private Subnet's EC2 Instance using NAT Gateway
+- Same as before, but instead of adding NAT Instance ID in the target in the routing table, add NAT Gateway ID with destination 0.0.0.0/0
+
+***Notice that*** using the NAT Instance or NAT Gateway for accessing the private subnet made us allow SSH Port for accessing it. Despite this technique working properly, its not preferred in a production environment as the NAT shouldn't get SSH requests to access it, meaning that we should remove the SSH Port from  NAT Instance, & you can't SSH request on a NAT Gateway anyways.
+	*What is the alternative?* Bastion Host
+
+### Bastion Host
+it's an EC2 instance with no applications, allowing SSH(22) "for Linux Bastion" or RDP(3389) "for Windows Bastion", & it has all required security applications. Bastion Host is the ONLY way to access the subnets from the internet.
+Thus It's a regular EC2 Instance with Security Hardening "Strict & Heavy security" created & set by you. ***BASTION HOST IS NOT A SERVICE!***
+- Bastion Hosts are launched in Public subnets
+- You can set the Bastion Host to only allow SSH or RDP from the corporate IP Addresses range instead of any remote access, this is done from the Bastion Host Security Group.
+- Remote accessing can be done by using a remote desktop, so the admins log in from home to the remote desktop in corporate, & then to the Bastion Host.
+- For high availability, multiple Bastion Hosts can be set across different subnets & apply auto scaling between them.
+- Bastion Hosts are used only for accessing the subnets, & not sending from inside a subnet to the internet. AWS recommends NAT Gateways for outgoing requests.
+![Pasted image 20221124215306](https://user-images.githubusercontent.com/109697567/204100980-5b73c8c3-aa98-414f-acd9-3cfdb5316bcc.png)
+
+### Proxy Server
+- Proxy Servers are used for URL Filtering
+- Created in Public Subnets
+- It's created in the EC2 instance & works similar to NAT Instances
+- If an EC2 in a private subnet required Proxy servers, the Proxy is initiated in a public subnet & the redirection happens similar to how NAT Instances did.
+###### Reverse Proxy Server
+it is a service that is used for caching. When accessing the application/website linked with a Reverse Proxy, the URL resolves to the R-proxy, filtering the traffic & then sending it to the application server, & it deals with the response from the application server the same way, caching the operation. So if the same request came again, it will response automatically as it's cached.
+
+## VPC Peering
+By default, VPCs cannot communicate directly with each other without using internet access(No Network between them). 
+VPC Peering connection allows routing between two VPCs.
+- Highly available & fully managed by AWS.
+- The two VPCs can be from the same account or different account, & they can be in the same AWS region or not.
+- The two VPCs cannot have overlapping CIDR ranges "not even in one subnet".
+- Subnets routing tables must be edited & have the new VPC range added to it.
+- The routing tables contain the CIDR Block Network Range.
+- Transitive Peering is not allowed "No intermediate routing to VPCs".
+- No Edge to Edge Routing "No intermediate routing to VPN/Direct connections".
+![Pasted image 20221125215929](https://user-images.githubusercontent.com/109697567/204100991-2233a5dd-1cfc-49fa-a671-f32a635c4566.png)
+*Note :* For any to any connection, the no. of required peering connections is N(N-1)/2
+
+### AWS Transit Gateway
+Upon increasing the no. of VPCs required to be connected together, more VPC Peering connections are required, & if on-premises is to be connected to the VPCs, no. of VPNs & DX will increase as will.
+Here comes the use of Transit Gateway, as it can simplify communication requirements as the VPCs grow.
+- Regional resource.
+- Highly available & fully managed by AWS.
+- Supports IPv4 & IPv6
+- VPCs cannot have overlapping CIDR ranges "not even in one subnet".
+- It allows intermediate routing through editable routing tables.
+- If multiple regions is to be connected, a transit gateway peering can take place between the two AWS Transit Gateways.
+- The routing tables contain the Subnets IP Addresses.
+![Pasted image 20221125225925](https://user-images.githubusercontent.com/109697567/204101019-8cfadba7-6561-4fb0-a4b2-a294904e4089.png)
+*Note:* Remember to edit the routing table either when using peering connection or Transit Gateway, setting each of them as the destination.
+
+### VPC Peering & Transit Gateway in Console
+##### 1- Peering Connection
+- Check that the security groups & NACLs allow the connection & Ping Request.
+- Upon creating Peering connection, the other VPC will get a pending request to accept or refuse.
+- The peering connection request is accepted from the *Peering connection* table.
+- After this step, if you tried to ping, time out will occur as the routing table is not set up yet.
+- In the routing table, make sure to set the *Destination* as the other CIDR Network, & the *Target* as the peering connection.
+- Edit both routing tables for both subnets containing EC2s you will use for the ping test.
+##### 2- Transit Gateway
+- For using Transit Gateway, first make sure to remove the peering connection from the routing tables to get rid of any black holes.
+- When creating the Transit Gateway you will find the attachment type desired.
+- After choosing the VPC, a new list will appear for you to choose which subnets to work with, as it's for subnet level.
+- Edit the route tables after creating the Transit Gateway, make sure to set the *Destination* as the other CIDR Network, & the *Target* as the Transit Gateway.
+ 
+## VPC Endpoints
+Used for making applications/instances on private subnets connect to AWS services "as S3 Buckets" without a public end point "no internet access".
+*ie:* Traffic going from the private subnet to the service does not go through the internet.
+- They are virtual devices, that are redundant, scalable, & highly available.
+- They allow VPC workloads to connect to supported AWS services without leaving the AWS network, thus no need of NAT instances or gateways.
+- It has two types : **Gateway or Interface Endpoints***. "usage of each is according to the service."
+*Note:* Only S3 & DynamoDB uses Gateways Endpoints, while services inside the VPC use Interface Endpoints.
+![Pasted image 20221125233953](https://user-images.githubusercontent.com/109697567/204101037-8f3f1291-85e8-4614-b00a-a6975358256a.png)
+
+##### 1- Gateway Endpoints
+- Set as a target in the subnet's routing table
+- Redundant & highly available.
+- Only one is required per VPC, but each gateway reaches a service.
+- You can configure multiple gateways for different services.
+- Region Specific.
+- No Security Groups.
+##### 2- Interface Endpoints
+- It's an interface with a private IP Address in a subnet you choose.
+- Services that use this endpoint are known to be *Powered by AWS Private Link*.
+- Supports IPv4
+- Regional Specific.
+- You can add Security Groups.
+- No Routing is done, instead it's based on DNS resolution to the service.
+*Note:* Remember to create an IAM Role for the instance with the permissions required for dealing with services, otherwise the endpoint will ensure the connection but the commands won't work.
+
+### Controlling Access to services with VPC Endpoint Policies
+- By default, an endpoint allows full access to the designated service.
+- *Endpoint Policies* can be used to control who access what in the designated service
+- The Policies exists for both kinds of endpoints.
+*Notice:* No NACLs or Security Groups, its done through permission policies.
+
+###  Accessing VPC Endpoints from Remote Networks using Proxy Server
+One of the uses of Proxy servers, is that if we created it in a private subnet & connect the subnet with VPN or DX connection to an on-premises site, the proxy can be used to redirect the traffic from the site to the VPC Endpoints, making AWS services reachable from the site without internet traffic.
+![Pasted image 20221126164858](https://user-images.githubusercontent.com/109697567/204101045-925a738f-511c-4afc-bd05-df4422f2c897.png)
