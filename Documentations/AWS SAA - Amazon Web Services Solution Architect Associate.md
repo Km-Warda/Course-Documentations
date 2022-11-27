@@ -605,7 +605,7 @@ Connecting a corporate data center to an AWS private subnet is done via static o
 - Customer can request a hosted connection with starting speed 50Gbps.
 ![Pasted image 20221127053917](https://user-images.githubusercontent.com/109697567/204120175-535ff2a7-05d2-457e-9b75-384f2c5f482e.png)
 
-###### DX High availability options
+##### DX High availability options
 DX Connection is not cost efficient, so setting up multiple DX links for high availability might not be the best option.
 - You can use VPN connection as your high availability solution, this is obviously is not fault tolerant.
 For higher fault tolerance "no economic limitings":
@@ -621,7 +621,7 @@ Direct Connect Gateway allows reaching any VGW in the account, using a single **
 It can associate either with VGWs in VPCs, or with a transit gateway that has multiple VPC attachments in one region.
 *Note:* DX Gateway won't establish any connection between the VPCs & each other. 
 ![Pasted image 20221127065015](https://user-images.githubusercontent.com/109697567/204120183-bc5e4c8a-776b-427f-90dc-696c707faa86.png)
-###### Multiple Region DX Connections
+##### Multiple Region DX Connections
 DX Gateway can be associated with a transit gateway, so no multiple DX links will be needed across different regions. A ***Transit VIF*** will be needed for Transit Gateways connections "after the ISP as the public & private VIF".
 ![Pasted image 20221127070202](https://user-images.githubusercontent.com/109697567/204120189-e399b014-7919-48f8-93fb-639a8350e238.png)
 *Note:* All kinds of DX connections are not considered secure "although the data link is dedicated to the customer", as the data is not encrypted. This can be overcome by using IPSec upon the DX connection, as stated before in Part 1.
