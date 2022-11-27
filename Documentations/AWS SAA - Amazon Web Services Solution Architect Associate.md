@@ -548,3 +548,80 @@ Used for making applications/instances on private subnets connect to AWS service
 ###  Accessing VPC Endpoints from Remote Networks using Proxy Server
 One of the uses of Proxy servers, is that if we created it in a private subnet & connect the subnet with VPN or DX connection to an on-premises site, the proxy can be used to redirect the traffic from the site to the VPC Endpoints, making AWS services reachable from the site without internet traffic.
 ![Pasted image 20221126164858](https://user-images.githubusercontent.com/109697567/204101045-925a738f-511c-4afc-bd05-df4422f2c897.png)
+
+## IPv6 Egress-only internet Gateway
+All IPv6 addresses are public, thus any IPv6 address you need is allocated from AWS not you.
+*What if you need a private instance allocated with IPv6?*
+- Egress Only Gateway allows outbound IPv6 traffic, but prevents initiated inbound traffic from the internet to the VPC, so it was designed to satisfy private subnets requirements.
+- It's attached to the VPC, & created under the VPC Console.
+- It's stateful.
+- cannot be associated by a security group. But notice that if this is required, the security groups & NACLs support IPv6, so you can add security roles as desired.
+- It's assigned through the routing table as the target.
+- A routing table can have both IPv4 & IPv6.
+
+![Pasted image 20221127015503](https://user-images.githubusercontent.com/109697567/204120128-7754a9d3-9318-4c80-9c32-67d07a57d4fc.png)
+
+## VPC Flow Logs
+It's a feature allowing logging to the IP traffic going to & from the network interfaces in the VPC.
+- It provides Source IP/Port, Destination IP/Port, and status (Accepted or Rejected).
+- You can create a flow log per VPC, per subnet, or per ENI "Elastic Network Interface".
+- Flow logs can be published to Amazon CloudWatch logs, *or* Amazon S3 Buckets.
+- To create a flow log for any of the 3 levels, it's created in the Console under the desired level as in picture.
+![Pasted image 20221127023122](https://user-images.githubusercontent.com/109697567/204120138-8c6bbdae-6459-446f-85dd-53ae6017ad85.png)
+
+## Hybrid Cloud Connectivity
+
+### VPN
+Connecting a corporate data center to an AWS private subnet is done via static or dynamic routing. This is done using a *Customer Gateway* for the corporate level, & *VGW* for the cloud level.
+- It uses IPSec to establish a secure connection.
+	Internet Protocol Security "IPSec" is a secure network layer protocol suite that can authenticate & encrypt data packets between host & gateway.
+- Internet-based connection, so quality & latency depends on the internet traffic.
+- Routing is either static or dynamic.
+- VPN encryption scope is not end-to-end encryption.
+- The VGW IP address the corporate will connect to is public IP address, & the customer gateway IP address is also public.
+- The customer gateway is the side that initiates connection.
+- After initiating, two public IP addresses are assigned to the VGW "Not highly available as the customer gateway still has one IP address".
+![Pasted image 20221127041838](https://user-images.githubusercontent.com/109697567/204120149-88bccdbf-dec0-4aed-b6d3-344034a5dbac.png)
+
+#### VPN setup on Console
+- Done under the VPC Console, VIRTUAL PRIVATE NETWORK (VPN) tab.
+- You will notice that you have the option to create customer gateway, this is not a creation of course but it's defining the customer gateway that already exists on the corporate side.
+![Pasted image 20221127042608](https://user-images.githubusercontent.com/109697567/204120154-aa970bbd-3956-46d5-bc99-08aba0b26601.png)
+- Choose the option create virtual private gateway, to setup your VGW.
+- The created VGW is detached, go to actions & attach it to a VPC.
+![Pasted image 20221127042930](https://user-images.githubusercontent.com/109697567/204120171-02a3c6f5-0f1c-46f8-bf90-97b4d63d5992.png)
+- Choose Site-to-Site VPN Connections, & create your VPN as desired.
+- Download the configuration file & send it to the corporate to set up the customer gateway, as it is the one that initiates the connection not the VGW.
+
+### AWS Direct Connect "DX"
+- Requires an AWS Router, that is assigned to the internet provider in the customer country.
+- the sub interfaces between the corporate & the ISP uses VLANs.
+- Only Dynamic Routing is supported.
+- Requires virtual interfaces "VIF"
+- Private VIF is for VPC connections, & public VIF is for AWS public endpoints "for services".
+- Provides low latency & consistent performance.
+- Supports link aggregation up to 4 "Using multiple links as one logical link for higher speed & bandwidth".
+- Customer can request a dedicated connection of speed 1-10Gbps.
+- Customer can request a hosted connection with starting speed 50Gbps.
+![Pasted image 20221127053917](https://user-images.githubusercontent.com/109697567/204120175-535ff2a7-05d2-457e-9b75-384f2c5f482e.png)
+
+###### DX High availability options
+DX Connection is not cost efficient, so setting up multiple DX links for high availability might not be the best option.
+- You can use VPN connection as your high availability solution, this is obviously is not fault tolerant.
+For higher fault tolerance "no economic limitings":
+- You can use multiple DX links.
+- You can use multiple DX links & multiple customer gateway.
+![Pasted image 20221127055212](https://user-images.githubusercontent.com/109697567/204120182-89f63cb9-af37-444f-8a23-d9f4b00132ea.png)
+*Note:* Remember that all of the connections after the DX router in the ISP cage is managed by AWS & stated as redundant & highly available. Thus no editing in these connection shall be considered.
+
+#### Direct Connect Gateway
+DX is a link to a specific region, if the region went down customer won't have access to the VPC without internet connection. Customer can use VPN connection after the DX router to reach the VGW assigned to the VPC. This makes the customer goes back to encrypting & secure connections again, dealing with ***public VIF***. *Another better & more efficient way is DX Gateway.*
+
+Direct Connect Gateway allows reaching any VGW in the account, using a single ***private VIF***.
+It can associate either with VGWs in VPCs, or with a transit gateway that has multiple VPC attachments in one region.
+*Note:* DX Gateway won't establish any connection between the VPCs & each other. 
+![Pasted image 20221127065015](https://user-images.githubusercontent.com/109697567/204120183-bc5e4c8a-776b-427f-90dc-696c707faa86.png)
+###### Multiple Region DX Connections
+DX Gateway can be associated with a transit gateway, so no multiple DX links will be needed across different regions. A ***Transit VIF*** will be needed for Transit Gateways connections "after the ISP as the public & private VIF".
+![Pasted image 20221127070202](https://user-images.githubusercontent.com/109697567/204120189-e399b014-7919-48f8-93fb-639a8350e238.png)
+*Note:* All kinds of DX connections are not considered secure "although the data link is dedicated to the customer", as the data is not encrypted. This can be overcome by using IPSec upon the DX connection, as stated before in Part 1.
