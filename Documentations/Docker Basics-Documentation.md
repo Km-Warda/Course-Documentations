@@ -6,7 +6,7 @@ Containers are packages of software that contain all of the necessary elements 
 ##### - After containers, installation has its own isolated environment & packaged with all configuration needed. Installation of the container app is done with only a docker command fetching & installing the app. And this enabled the installation of different versions of the same app without any conflicts.
 
 Containers technically is layers of images, the base is mostly **Linux Base Image** because its small size, and the application image on top. Layers being downloaded in the picture.
-![[Containers Layers.png]]
+![Containers Layers](https://user-images.githubusercontent.com/109697567/205089846-80099196-adcd-4a71-8dc8-9c8c6bea8222.png)
 
 *note:* Docker image is the **non running package** while Docker container is what is **running service** is called.
 
@@ -43,7 +43,7 @@ Containers technically is layers of images, the base is mostly **Linux Base Imag
 # Docker Network
 Docker creates its own isolated networks where the containers are running in, any containers inside will communicate with only the container name as they are in the same network. And the applications that runs outside the network willl communicate using localhost:*(PORT_NO.)*
 By default Docker already generates some networks on its own.
-![[Docker Networks.png]]
+![Docker Networks](https://user-images.githubusercontent.com/109697567/205089912-5e612c43-b5c8-4252-92a2-f83603de5a05.png)
 
 * #### docker network ls
 *list docker networks
@@ -52,10 +52,10 @@ By default Docker already generates some networks on its own.
 
 *note:* Check the image page in the docker hub to check all available configurations.
 For example take notice of the following run command 
-![[Options Run Command.png]]
+![Options Run Command](https://user-images.githubusercontent.com/109697567/205089948-3c6a486c-4d66-4559-a8ef-c57c1b831600.png)
 # Docker Compose
 Instead of applying the last command for configuring multiple containers, Docker compose tool lets you put all the configuration in a structured way in one file.
-![[Docker Compose.png]]
+![Docker Compose](https://user-images.githubusercontent.com/109697567/205089981-d8176d74-55e6-4922-929c-0d69fc2ba0fe.png)
 
 * #### docker-compose -f config.yaml up
 *Starts the containers in config.yamel file using the docker compose tool.*
@@ -81,12 +81,12 @@ The way Docker volumes work is that it mounts the physical host file system path
 *like the anonymous volumes but you reference the volumes by name*
 
 *note:* The Named Volumes is the one that should be used in production because there is additional benefits to letting Docker manage the volume directories on the host.
-![[Docker Volumes.png]]
+![Docker Volumes](https://user-images.githubusercontent.com/109697567/205090057-0e4bd7a6-dbfd-4fb5-8662-9c820c5313bb.png)
 *note:* For applying volumes using Docker-compose, use the "volumes:" attribute and enter the same data of the desired volume type as before. Then enter the desired volume to be mounted at the end also using the "volumes:" attribute.
 
 This means you can mount multiple containers to the same volume of they needed to share the data.
-![[Volumes in Docker-Compose.png]]
+![Volumes in Docker-Compose](https://user-images.githubusercontent.com/109697567/205090094-72b7e735-3a5b-433e-88e7-8be4b23ce5a0.png)
 
 ### Docker volume locations :
-![[Docker Volume Locations.png]]
+![Docker Volume Locations](https://user-images.githubusercontent.com/109697567/205090132-519692cf-474f-4fb0-8d98-1cf47a8f534a.png)
 *note:* On MAC OS specifically, Docker creates a Linux VM and stores all Docker data there. so if you executed *ls /var/lib/docker*, a "no such file or directory" message will appear. You can access the file through accessing the VM terminal by "screen" command. & the data will be present there. To exit the screen press *ctrl+A+K* {For MAC OS}.
