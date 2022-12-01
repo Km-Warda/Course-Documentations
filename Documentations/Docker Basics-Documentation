@@ -7,7 +7,6 @@ Containers are packages of software that contain all of the necessary elements 
 
 Containers technically is layers of images, the base is mostly **Linux Base Image** because its small size, and the application image on top. Layers being downloaded in the picture.
 ![[Containers Layers.png]]
-
 *note:* Docker image is the **non running package** while Docker container is what is **running service** is called.
 
 
