@@ -620,3 +620,340 @@ It can associate either with VGWs in VPCs, or with a transit gateway that has mu
 DX Gateway can be associated with a transit gateway, so no multiple DX links will be needed across different regions. A ***Transit VIF*** will be needed for Transit Gateways connections "after the ISP as the public & private VIF".
 ![Pasted image 20221127070202](https://user-images.githubusercontent.com/109697567/204120189-e399b014-7919-48f8-93fb-639a8350e238.png)
 *Note:* All kinds of DX connections are not considered secure "although the data link is dedicated to the customer", as the data is not encrypted. This can be overcome by using IPSec upon the DX connection, as stated before in Part 1.
+
+# Part 3: EC2 Deep Dive
+## EC2 Instance Families & Types
+![Pasted image 20221127213655](https://user-images.githubusercontent.com/109697567/206047355-6e6c2290-7c89-43b1-bbf4-2085253b34ad.png)
+![Pasted image 20221128052220](https://user-images.githubusercontent.com/109697567/206047372-c5c2ce67-623b-4c10-a90c-306641df232e.png)
+*Note:* Burstable bandwidth instances are instances that give credits if the I/O operations were below limit for a month, these credits stretches the limit of the I/O operations per month until you run out of credits.
+
+## Instances Lifecycle & Billing
+Instances are billable in three states, either running, rebooting, or stopping for Stop-Hibernate, the other states are not billed for.
+![Pasted image 20221128052745](https://user-images.githubusercontent.com/109697567/206047417-827fbc81-bcbf-4194-be4b-eeabacc22354.png)
+*Note:* ***Stop-Hibernate*** state is a freeze state not a complete shutdown, RAM content, Instance ID, Processes running, private IP addresses and EBS root & data volumes are preserved until the restart.
+Hibernated instances are not billable, except for EBS volumes & applied Elastic IP addresses.  
+It's used to pre-warm applications that take a long time to boot, or to make DR backup site ready to bused in case of disaster.
+Not all instances support Stop-Hibernate.
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html#hibernating-prerequisites 
+
+## Instance Metadata
+It's data about the instance, & can be used to conigure or manage the instance.
+- To view an EC2 instance metadata, connect to the EC2 & use one of these commands:
+	- GET http://169.254.169.254/latest/meta-data/
+	- Curl http://169.254.169.254/latest/meta-data/
+- To view a specific metadata parameter, for example to view local hostname:
+	- GET http://169.254.169.254/latest/meta-data/hostname/
+	- Curl http://169.254.169.254/latest/meta-data/hostname/
+![Pasted image 20221129051321](https://user-images.githubusercontent.com/109697567/206047460-0c0adc0f-37d4-4074-bfa3-e706aa717f4f.png)
+
+## Instance User Data
+It's a data supplied by the user at the instance launch in the form of script to be executed during instance boot.
+- It's limited to 16Kb in size.
+- User data can be changed after stopping the instance.
+- User data is not encrypted, so don't include passwords or sensitive data in user data scripts.
+- Can be retrieved using http://169.254.169.254/latest/user-data
+- User data scripts will stop by rebooting the instance, to execute the user data at every launch visit https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
+*Note:* AWS does not charge for read requests for user data.
+![Pasted image 20221129052557](https://user-images.githubusercontent.com/109697567/206047481-ef3113dc-ce8e-4bc4-a81e-85cd0d33d012.png)
+
+## Instance Purchasing / Launch Types
+##### 1- On-Demand
+- Most expensive, billable for each second for instances that you launch.
+- Used for short duration jobs.
+##### 2- Reserved Instances 
+- Prepaid.
+- High savings up to 75% discount compared to on-demand.
+- 1 or 3 years commitments. 
+- Can be zonal (per AZ) or Regional scoped.
+- It has two types:
+	***- Standard RIs***: Higher discounts (up to 75%), & can only modify the size of the instance not the family.
+	***- Convertible RIs:*** Lower discounts (up to 54%), & can modify or exchanged with other convertible RIs. 
+##### 3- Scheduled Reserved Instances
+- Prepaid.
+- Up to 54% discount.
+- 1 year commitment.
+- Upfront purchase instance capacity for a **recurring** daily, weekly, or monthly schedule.
+##### 4- On-demand Capacity Reservation 
+- No commitment, & can be cancelled
+- Reserving a specific on-demand instance type capacity in a specific AZ.
+##### 5- Spot Instances ($) 
+- Cheapest up to 90% savings.
+- Utilizes AWS's unused EC2 instances. 
+- Can be interrupted.
+- Request is on one AZ/subnet.
+- Availability is not guaranteed when you need it.
+- Launches the instance when the market price meets the required, & terminated if the market price exceeded the price customer required.
+- Used for applications that doesn't have strict requirements & can be interrupted.
+- Default interruption behavior is terminating the instance, this can be changed for EBS-backed spot instances to stop or hibernate. This doesn't apply to spot blocks.
+- There are two types of requests for spot instances:
+	***- One Time:*** The request remains active until fulfilled, request expires, or gets cancelled.
+	***- Persistent:*** The request remains active until it expires, or you cancel it even if the instance is fulfilled. 
+- Aside from spot instances there are:
+	***- Spot Blocks:*** Spot blocks will likely not to be terminated upon launching, *used with finite durations* "few hours work". Request is on one AZ/subnet.
+	***- Spot Fleet:*** used to launch a fleet of spot & optional om-demand instances, it uses instance pools & can maintain target capacity & allocation strategies, *used with optional on-demand instances* for work that requires on-demand instances but increasing the instances might be a desired option "As for doing the work faster". Request is on one  or more AZ/subnet.
+![Pasted image 20221203142109](https://user-images.githubusercontent.com/109697567/206047512-01d04fe2-00e3-4164-ba95-27452f71d256.png)
+##### 6- Saving Plan
+- Prepaid.
+- 1 or 3 years commitment for a specific amount of usage
+- Commitment for on-demand launches.
+- up to 72% savings.
+##### 7- Dedicated Hosts
+- Pay for a fully dedicated physical host.
+##### 8- Dedicated Instances
+- Pay by the hour for instances that run on a dedicated single hardware.
+![Pasted image 20221130194918](https://user-images.githubusercontent.com/109697567/206047556-0184b5a5-5086-41fd-82f5-39259984a857.png)
+Setting dedicated hosts/instances in Console:
+![Pasted image 20221203212845](https://user-images.githubusercontent.com/109697567/206047619-8af67315-aab9-4598-9772-5019ca6fa514.png)
+
+## EC2 Placement Groups
+By default, AWS EC2 service tries to launch instances spread apart to avoid a major impact in case of a failure. 
+Placement groups can be used to allow customers to influence how their instances are placed to meet the application needs. Depending on the type of workload, there are three different ways to launch a placement group.
+##### 1- Cluster Placement Groups
+- Instances are placed in a Single AZ
+- Low node-to-node latency for inter-node communications. 
+- Use enhanced networking instances.
+- Good for High performance computing which requires inter-instance low latency and high speed. 
+- Single AZ has a huge cost advantage at the risk of no high availability "Communications between different AZ instances are billed".
+##### 2- Partition Placement Groups
+- Instances are launched in different logical partitions (up to 7 per AZ). 
+- Each partition is launched in a separate rack/server.
+- One or more AZs in one region.
+- Ideal for HDFS, HBase, and Cassandra Database "BigData applications".
+##### 3- Spread Placement Groups
+- Each instance is placed in a different rack (up to 7 per AZ).
+- One or more AZS.
+- Used for applications with a small number of critical instances that need to be separated from each other.
+
+#Billing
+## EC2 Billing
+1- Across AZS in the same VPC: Chargeable both ways .
+2- Across peered VPCS: Chargeable both ways.
+3- Between Instances, Same AZ using Elastic or Public IPs: Chargeable both ways.
+4- Between Instances, Same AZ using Private IPv4 IPs: Free.
+5- Outbound to the Internet: Chargeable at Regional rate.
+6- Inbound to an AWS region from the Internet or another region: Free.
+7- Outbound from a Region to another region: Chargeable at Regional rate.
+![Pasted image 20221203202318](https://user-images.githubusercontent.com/109697567/206047765-1020d0c0-9d83-4459-ab94-37096c8024e0.png)
+Creating an EC2 with a Placement Group on the Console:
+![Pasted image 20221203203448](https://user-images.githubusercontent.com/109697567/206047786-63335c7d-d364-4fd8-976d-8e56f671513f.png)
+
+#CloudWatch
+## EC2 Monitoring & Check ups
+### EC2 Status Check
+Status Checks for EC2 done by AWS to assure performance promised to the customer.
+##### 1- EC2 System Status Check:
+- Is about monitoring and detecting issues needing AWS's involvement to fix. 
+- As host hardware or software problems, network connectivity problems or system power.
+- Is performed every minute "The result of the check is either Ok, or Impaired".
+##### 2- EC2 Instance Status Check:
+- Monitors and detects issues that require the customer's involvement to fix.
+- As misconfigured startup configurations, or exhausted memory. 
+- It is checked every minute by default.
+- Only checks for issues, doesn't get resolved by AWS "As the instance is created by the customer".
+
+### EC2 Monitoring using CloudWatch
+##### 1- Basic Monitoring
+- By default, Amazon EC2 sends metrics to CloudWatch every 5 minutes. 
+- free of charge. 
+##### 2- Detailed Monitoring
+- Customer can enable detailed monitoring whereby EC2 service sends the metrics to CloudWatch every minute.
+- Detailed monitoring is chargeable.
+
+*Note:* Customer can configure CloudWatch to react automatically to failed checks:
+- setting CloudWatch Alarm Actions to automatically stop, terminate, reboot or recover EC2 instances.
+***Recover action can only be done for System Status check*** related failures. ***Reboot action is more suitable for Instance Status Check*** related failures.
+- Customer can also use CloudWatch Events to respond automatically to events such as application availability issues or resource changes.
+
+*Note:* Pay attention to what is NOT sent by default to CloudWatch. For example, Memory utilization and disk space utilization are key metrics required for monitoring, but not sent by default (require custom metrics).
+![Pasted image 20221203220352](https://user-images.githubusercontent.com/109697567/206047887-5bf034aa-38d1-4091-a696-63d254567f44.png)
+
+## EC2 Instance-Store
+- Instance store volumes provide temporary block-storage.
+- It is ideal for temporary storage of data that changes frequently. For example, Buffers and caches, Scratch data, Temporary content.
+- Some instance types include instance store volumes by default (ex. i3, i3en). 
+- Instance store volumes such as those on the i3 & i3en Instances can be used for high IOPS "Input/Output operations per second" OLTP databases, relational DBs and non-relational DBs.
+- They can provide millions of IOPS, while EBS has a maximum limit of 64000 IOPS.
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/storage-optimized-instances.html
+
+## Elastic Block Store (EBS)
+- EBS volumes behave like raw, unformatted, external block storage devices. 
+- EBS volume data is replicated across multiple servers in the same availability zone (AZ).
+- An EBS volume attaches to a single EC2 instance at a time ***(Except for the Multi Attach Provisioned IOPS)***, this happens through the AWS network. 
+- Multi Attach EBS volumes allow up to 16 instances per volume, & cannot be used as boot/root volume, only for data volumes. Exclusive only for some instances "Provisioned IOPS instances".
+- Both the instance and the EBS volume must be in the same AWS AZ.
+- Elasticity in EBS Volumes lets us dynamically modify the size, performance, and volume type of the Amazon EBS volumes without detaching them. Size can be increased not decreased.
+### EBS Types
+##### 1- Provisioned IOPS (io1)
+- Used Cases:
+	- Large IOPS intensive workloads that require consistent performance.
+	- Large production databases.
+- Cost: Highest
+- Orientation: IOPS
+##### 2- General Purpose (gp2) 
+- Used cases:
+	- General workloads.
+	- Small Databases.
+	- Dev/Test environments.
+	- Virtual Desktops.
+	- Workloads performing small, random I/O.
+- Cost: Higher
+- Orientation: IOPS
+##### 3- Throughout Optimized (st1)
+- Used Cases:
+	- Large, sequential I/O workloads such as Amazon EMR, Big Data, ETL, data warehouses, and log processing.
+	- Streaming workloads requiring consistent, fast throughput "transfer speed" at a low price.
+- Cost: Low
+- Orientation: Throughout
+##### 4- Cold HDD (sc1)
+- Used Cases:
+	- Large, sequential cold- data workloads.
+	- Throughput-oriented storage for large volumes of data that is infrequently accessed.
+	- Scenarios where the lowest storage cost is important.
+- Cost: Lowest
+- Orientation: Throughout
+![Pasted image 20221203225855](https://user-images.githubusercontent.com/109697567/206047934-32f888a5-0942-4cce-9c55-50e4149415a5.png)
+#### Volume Actions:
+![Pasted image 20221205191105](https://user-images.githubusercontent.com/109697567/206047952-88c3a0be-a1fb-42b4-9035-e1547836d383.png)
+
+### EBS Snapshots
+Can be manual or scheduled, the snapshots go to an S3 bucket in the same region, but can be copied to another region if desired.
+##### Amazon Data Lifecycle Manager (DLM)
+A total solution for creating, deleting, and retaining EBS volume snapshots. 
+-  You can configure snapshot lifecycle policies to carry the required EBS snapshot tasks.
+- A DLM policy can snapshot a single volume or multiple volumes attached to an EC2 instance. 
+- A DLM Policy uses resource tags to identify the volumes it needs to work on. 
+- You can also automate EBS snapshots with CloudWatch events, but that is for individual EBS volumes.
+#### Snapshot Actions:
+![Pasted image 20221205192326](https://user-images.githubusercontent.com/109697567/206047986-ad1be682-6d34-42ca-ae62-0031b10d1872.png)
+
+### EBS Encryption
+Amazon EBS uses KMS Customer Master Keys (CMKs) to generate data (encryption) keys to encrypt and decrypt data on EBS volumes. 
+- EBS Currently supports symmetric keys only.
+- Data is encrypted on the host of the EC2 instance. This means data in-transit to an encrypted EBS volume is also encrypted "encrypted all the way".
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#EBSEncryption
+![Pasted image 20221204204548](https://user-images.githubusercontent.com/109697567/206048024-0547319f-f1ec-4f5e-8a4d-603bde1920a6.png)
+& by encrypting a volume using a CMK:
+- The volume, its snapshots, volumes restored from its snapshots, and copies of the snapshots are all encrypted.
+- There is no direct way of changing the encryption status of a volume or a snapshot. For example, a new volume might be required for copying a decrypted data on. 
+- We cannot change the CMK key used to encrypt an existing encrypted volume or snapshot.
+- However, we can work around these restrictions with copy and create volume actions.
+![Pasted image 20221205010658](https://user-images.githubusercontent.com/109697567/206048105-2f61b935-1f41-404f-a05f-6f8c91b2a430.png)
+*Note:* We can enable EBS Encryption region-wide which will encrypt all current & future volumes, snapshots & copies of snapshots.
+
+### Sharing EBS Snapshots
+Snapshots by default have permissions set to private & can only be viewed by the account. 
+***V.Imp.NOTE:*** If we want to share an snapshot with an account in a different region, we need to copy it to that region first.
+
+##### Unencrypted snapshots:
+- Snapshots can be shared with all AWS community by modifying permissions to public. 
+- Snapshots can be shared with select AWS accounts (permission needs to be private). 
+##### Encrypted snapshots:
+-  Can't be shared as public snapshots. 
+- Can only be shared with select accounts.
+- The receiving accounts must be given ****permissions*** on the CMK used to encrypt the shared snapshot "not the key, as the key don't leave the KMS to be downloaded as mentioned before".
+- An encrypted snapshot that was encrypted by the default CMK "AWS-managed CMKs (*aws/service_name*)" cannot be shared.
+![Pasted image 20221205192100](https://user-images.githubusercontent.com/109697567/206048254-23c21bf8-f24b-42b5-a5db-e973fd54e70f.png)
+
+## AMIs & Golden AMIs, Creating AMI From an EBS-Backed EC2 Instance
+(AMI: Amazon Machine Images. *ex:* Linux image)
+
+After launching an instance and customizing it; customer creates his own AMI, which can also be called a Golden AMI.
+- *ie.:* Golden AMIs are customized AMIs.
+- The custom AMI includes snapshots of all attached EBS volumes and they get stored in S3.
+- This comes in handy when taking a snapshot, the snapshot will include the basic AMI, plus all the configurations & customizations required for reinstallation.
+##### Copying Accounts
+- We can copy an AMI within the same region or across AWS regions. 
+- We can copy AMIs with encrypted snapshots and change the encryption status during the copy process.
+- AMIs from the marketplace (with billing product codes) and Windows AMIs can't be copied to another account. 
+	To work around that, launch an instance from the AMI, then create an AMI from that EC2 instance.
+##### Sharing AMIs Between Accounts
+- When sharing an AMI that has encrypted volumes, we need to share the CMKs used to encrypt those volumes' snapshots.
+- If we want to share an AMI with an account in a different region, we need to copy the AMI to that region first.
+- Sharing an AMI does not change its ownership. The owning account is charged for the storage of the AMI.
+*Note:* Notice that the AMI images is treated the same way as EBS volumes when sharing & copying. This is also true in the AWS Console.
+
+### Creating Custom AMI Image from EC2 Console:
+![Pasted image 20221205224425](https://user-images.githubusercontent.com/109697567/206048309-eaa7aa65-9b56-45cf-86c7-4019305f773d.png)
+*Note:* When creating an AMI image, it's registered automatically in AWS, **Deregistration** is required first before deletion.
+
+## RAID (Redundant Array of Independent Disks)
+It's combining multiple volumes & using them as one volume, either for redundancy or performance, & can be used to increase number of IOPS.
+- EBS volumes support all RAID types. 
+- RAID is performed at the OS level Software. 
+- RAID volumes are not recommended by AWS to be used as root/boot volumes.
+### RAID Types
+##### 1- RAID 0
+- Highest IOPS performance among all RAID types.
+- Resulting IOPS is the sum of individual IOPS for all volumes.
+- No redundancy/mirroring.
+- Failure of any volume means failure of the entire array.
+##### 2- RAID 1
+- NO IOPS performance enhancement.
+- Redundant since the same data is written to all volumes.
+##### 3- RAID 10
+- Combines the benefits of RAID 0 and RAID 1.
+- Provides redundancy and performance enhancements.
+
+## AWS Batch
+AWS Batch is a fully managed service that simplifies running batch jobs "recurring Jobs" of any scale across multiple availability zones within a region.
+- Regional Scale
+- It plans, schedules, and executes the batch computing workloads and provisions the optimal quantity of compute required. 
+- Customers do not have to run or maintain servers or schedulers. 
+- It can scale to hundreds of thousands of batch computing jobs. 
+- Use cases include digital media rendering, drug screening, and post trade analysis.
+
+# Part 4: Elastic Load Balancing & Auto Scaling Deep Dive
+## Target Groups, Listeners, & Health Checks
+Load Balancer is a REGIONAL construct, cannot create load balancers for applications across multiple regions.
+
+##### How it works ?
+ELB Load Balancer is an EC2 instance with the load balancing software, launched in an AWS-Created VPC called VPC ELB.
+It reaches the instances in customer VPC with an AWS-Created ENI called ENI-ELB in customer VPC. This means that the customer subnet must have available IP addresses in range for the ENI-ELB. 
+It deals with the private IP address given too the ENI-ELB.
+![Pasted image 20221206024324](https://user-images.githubusercontent.com/109697567/206048344-82b16614-2089-4f7c-8fd8-e6b82c587080.png)
+
+### Load Balancer Types
+##### 1- Classic Load Balancer (CLP)
+- Backend EC2 Instances
+- Applicable on all layers, but old & not recommended by AWS anymore
+##### 2- Application Load Balancer (ALP)
+- Applicable upon Layer 7 "Applications layer" 
+- Targets can be EC2 Instances, IP addresses, Lambda Function
+##### 3- Network Load Balancer (NLP)
+- Applicable upon Layer 4 "Network layer" 
+- Targets can be EC2 Instances, IP addresses, Lambda Function
+- Highest Performance for load balancers "only for layer 4".
+*Note:*  Load balancers applicable on IP Addresses allow the ability to apply load balancing for on-premises sites as well, by using their IP address.
+
+### Target Groups
+It's a logical grouping of targets, targets can be EC2 Instances, IP addresses, or ECS microservice.
+- A target is an endpoint registered with the ALB/NLB as part of a target group.
+- IP addresses can be used to add targets that are instances in a peered VPC, on- premises servers, and AWS resources that can be addressed by IP and port. 
+- ALB/NLB can route traffic to multiple target groups.
+- A target can be registered with a target group multiple times using different ports.
+
+### ELB Listeners
+A listener is the process that checks for connection requests to the ELB nodes, Multiple listeners can be configured on the ELB.
+- On the CLB, listeners are configured frontend towards the clients, and backend towards backend instances.
+- On ALB/NLB, frontend is the same as CLB, but backend is configured at the target group.
+![Pasted image 20221206033843](https://user-images.githubusercontent.com/109697567/206048375-9fc2a748-c7ef-4568-9d8f-d8dd095e54b0.png)
+
+### EBS Health Checks
+A load balancer decouples the application layer by concealing the failure in one tier from other tiers.
+- Health checks are used by the elastic load balancer to track the health and responsiveness of the backend compute.
+- Health check ports and thresholds are configurable.
+- This way, ELB increases the availability of the application.
+- If no healthy backend computes were found, the traffic won't be dropped, but will be sent to all computes instead "in hope of a response".
+
+### Target Groups & Listeners Rules
+A rule can be given to each listener to specify a specific job "*ex:* specific Port".
+- Any listener has a default rule.
+- The default rule is sending any traffic to the target group port.
+- Customer can define different rules.
+- Rules are applied from top to bottom in the console.
+- If no rule were to be satisfied the traffic is sent to the default rule.
+![Pasted image 20221206035115](https://user-images.githubusercontent.com/109697567/206048394-979d82b8-8868-4425-ada5-0a3c96983791.png)
+![Pasted image 20221206035943](https://user-images.githubusercontent.com/109697567/206048412-46195733-e291-4b71-ae3c-e43ba570e8fb.png)
+
+#### EBS is on the EC2 Dashboard in Console:
+![Pasted image 20221206035509](https://user-images.githubusercontent.com/109697567/206048439-b7790ab2-1d37-4055-ab68-262a01aec959.png)
