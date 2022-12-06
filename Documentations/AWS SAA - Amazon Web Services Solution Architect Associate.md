@@ -52,7 +52,6 @@ So The same AWS account can have multiple users with different permissions, inst
 - IAM Role:
 	IAM Role is a set of permissions, acts as a badge for a determined temporary time "STS - Security Token Service".
 
-
 ### IAM Console
 ### *_USERS:*
 
@@ -74,7 +73,6 @@ So The same AWS account can have multiple users with different permissions, inst
 Having restrictions over passwords in the system
 ![Pasted image 20221020015357](https://user-images.githubusercontent.com/109697567/200855949-dab439c2-4ea5-4429-aa60-c8d9bd49ad10.png)
 ![Pasted image 20221020015627](https://user-images.githubusercontent.com/109697567/200856160-2c05dff0-7e09-4c78-81a7-dfb8f0473af3.png)
-
 *Note:* When applying a new password policy, only new users will be affected, & the old users will only be affected after password expiry "Enable passwords expiration".
 
 ### IAM Best Practice
@@ -141,7 +139,7 @@ EC2 is launched in a subnet in the availability zone.
 
 ### EC2 Instances Types:
 ##### 1- EBS Volumes - Elastic Block Store
-- EBS volumes are volumes that keeps the data persistent & not lost after turning of the EC2.
+- EBS volumes are volumes that keeps the data persistent & not lost after turning off the EC2.
 - The EBS Volumes are always outside the EC2 instance but **in the same availability zone.**
 - The EC2 volume holding the data is reached through internet access as its remote.
 - EC2 instances with an EBS root volume are called EBS-Backed EC2 Instances.
@@ -163,6 +161,7 @@ EC2 is launched in a subnet in the availability zone.
 ![Pasted image 20221031012400](https://user-images.githubusercontent.com/109697567/200857171-dc7050f2-83b0-498e-a5cb-21df72a4573a.png)
 *Note:* instead of typing the SSH key in the command, use the option -K for storing it in memory & option -A for the agent forwarding. 
 ![Pasted image 20221111065442](https://user-images.githubusercontent.com/109697567/201266337-b006c88e-0e45-4632-b8db-4095ad3e4720.png)
+
 ### Private, Public & Elastic IP Addresses 
 ![Pasted image 20221031014312](https://user-images.githubusercontent.com/109697567/200857220-2cb7281b-5258-439a-97f0-d2ef243fde0b.png)
 *Note:* EIP has a soft limit of 5 per VPC "Can be changed by sending a ticket"
@@ -243,7 +242,6 @@ It's an *AWS managed* Key management service that allows customers to create & m
 Keys managed by AWS are known by the name of *aws/service_name* 
 **Example:** creating an EC2 instance & encrypting EBS Volume:
 ![Pasted image 20221101054012](https://user-images.githubusercontent.com/109697567/200858659-e183d1f7-f56d-43df-b2bd-fbb2a354adcb.png)
-
 **Note:**  AWS-managed CMKs have automatic key rotation of 3 years, while Customer-Managed CMKs have 1-year optional rotational period "If Chosen".
 
 ## AWS S3 -Simple Storage Service / Object Storage
@@ -272,7 +270,6 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - By default all requests are denied for an identity, an explicit allow overrides this.
 - an explicit deny overrides all allows.
 - Policies are stored as JSON documents in AWS.
-
 ![Pasted image 20221102233310](https://user-images.githubusercontent.com/109697567/200859226-fd4774c1-acc6-4a1d-8b45-1ac2bac1e58e.png)
 
 ## SQS - Amazon Simple Queue Service (Message Queue Concept)
@@ -291,9 +288,7 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - Subscribers can be users, emails, SMSs, services & many other formats.
 - SNS is reliable & stores multiple data copies across multiple AZs.
 - SNS supports HTTPS in-transit.
-
 ![Pasted image 20221103014434](https://user-images.githubusercontent.com/109697567/200859449-f4fb80d3-3c56-4e0f-8234-26952278915b.png)
-
 **Note:** Message size in SQS & SNS shouldn't exceed 256 Kbytes, indicating that the messages either in queue "SQS" or instant "SNS" won't include the data or the object itself, only a message about the data.
 
 ## CDN - Content Delivery Network (Amazon CloudFront)
@@ -338,7 +333,6 @@ Programmatic access for any IAM user isn't done by username & password, it requi
 - This scaling can be vertical scaling or horizontal scaling.
 - Elasticity describes the system ability to provision & deprovision resources **automatically** to ensure that resources matches the need.
 - Auto scaling groups can be configured for EC2 instances
-
 ![Pasted image 20221103043119](https://user-images.githubusercontent.com/109697567/200859709-cc84e90c-9afd-4851-90fa-87e2878137ac.png)
 
 ## CloudWatch
@@ -407,7 +401,7 @@ Graded from lower cost & recovery speed to the higher cost & recovery speed as f
 Suppose a scenario of which the EC2 in a private instance & need to update its data from an S3 Bucket, the bucket is accessible by a public IP on the internet, & same goes for all of AAWS Services. As the EC2 is in a private subnet it won't be able to connect to the S3 to get the update unless changed to a public subnet, removing the purpose which the EC2 is in a private subnet in the first place.. so the solution is refused.
 There are two NAT Services that can fix the issue proposed:
 #### 1- NAT Instance
-- Its an EC2 instance AMI, so it's fully managed & secured by the client.
+- Its an EC2 instance AMI (Amazon Machine Image), so it's fully managed & secured by the client.
 - NAT instance is launched in a public subnet.
 - The routing table of the private subnet requiring internet access should be given a default route pointing to the NAT Instance ID
 - The NAT instance has a translation table, having the source/destination IP & port, as well as the mapping IP & port.
@@ -465,7 +459,7 @@ Thus It's a regular EC2 Instance with Security Hardening "Strict & Heavy securit
 - Bastion Hosts are used only for accessing the subnets, & not sending from inside a subnet to the internet. AWS recommends NAT Gateways for outgoing requests.
 ![Pasted image 20221124215306](https://user-images.githubusercontent.com/109697567/204100980-5b73c8c3-aa98-414f-acd9-3cfdb5316bcc.png)
 
-### Proxy Server
+## Proxy Server
 - Proxy Servers are used for URL Filtering
 - Created in Public Subnets
 - It's created in the EC2 instance & works similar to NAT Instances
@@ -564,6 +558,7 @@ All IPv6 addresses are public, thus any IPv6 address you need is allocated from 
 ## VPC Flow Logs
 It's a feature allowing logging to the IP traffic going to & from the network interfaces in the VPC.
 - It provides Source IP/Port, Destination IP/Port, and status (Accepted or Rejected).
+- The logs doesn't contain the data or a description of it.
 - You can create a flow log per VPC, per subnet, or per ENI "Elastic Network Interface".
 - Flow logs can be published to Amazon CloudWatch logs, *or* Amazon S3 Buckets.
 - To create a flow log for any of the 3 levels, it's created in the Console under the desired level as in picture.
