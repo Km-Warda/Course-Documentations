@@ -825,6 +825,7 @@ A total solution for creating, deleting, and retaining EBS volume snapshots.
 - You can also automate EBS snapshots with CloudWatch events, but that is for individual EBS volumes.
 #### Snapshot Actions:
 ![Pasted image 20221205192326](https://user-images.githubusercontent.com/109697567/206047986-ad1be682-6d34-42ca-ae62-0031b10d1872.png)
+
 *Note:* Upon restoring a snapshot to a volume, the volume must be equal to or larger than the original snapshot volume size.
 *EX.* A snapshot of a volume of 8Gb containing data of 3Gb "5Gb free space", when restoring or copying to a new volume, the new volume must be ≥ 8Gb.
 
