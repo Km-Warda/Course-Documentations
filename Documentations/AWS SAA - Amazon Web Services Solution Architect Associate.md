@@ -913,13 +913,13 @@ It deals with the private IP address given too the ENI-ELB.
 ![Pasted image 20221206024324](https://user-images.githubusercontent.com/109697567/206048344-82b16614-2089-4f7c-8fd8-e6b82c587080.png)
 
 ### Load Balancer Types
-##### 1- Classic Load Balancer (CLP)
+##### 1- Classic Load Balancer (CLB)
 - Backend EC2 Instances
 - Applicable on all layers, but old & not recommended by AWS anymore
-##### 2- Application Load Balancer (ALP)
+##### 2- Application Load Balancer (ALB)
 - Applicable upon Layer 7 "Applications layer" 
 - Targets can be EC2 Instances, IP addresses, Lambda Function
-##### 3- Network Load Balancer (NLP)
+##### 3- Network Load Balancer (NLB)
 - Applicable upon Layer 4 "Network layer" 
 - Targets can be EC2 Instances, IP addresses, Lambda Function
 - Highest Performance for load balancers "only for layer 4".
