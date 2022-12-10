@@ -1,4 +1,4 @@
-# Part1: Basics & Concepts
+# Part 1: Basics & Concepts
 
 ## Cloud types:
 Using Cloud Servers provide much more efficiency than on-Premises data centers, regarding cost, reliability & time.
@@ -396,6 +396,7 @@ Graded from lower cost & recovery speed to the higher cost & recovery speed as f
 - Active/Active Sites.
 ![Pasted image 20221109104352](https://user-images.githubusercontent.com/109697567/200860019-25a7675d-483e-4e56-a3ec-b6e87f6972f8.png)
 
+
 # Part 2: VPC Deep Dive
 ## NAT Deep Dive & NAT services 
 Suppose a scenario of which the EC2 in a private instance & need to update its data from an S3 Bucket, the bucket is accessible by a public IP on the internet, & same goes for all of AAWS Services. As the EC2 is in a private subnet it won't be able to connect to the S3 to get the update unless changed to a public subnet, removing the purpose which the EC2 is in a private subnet in the first place.. so the solution is refused.
@@ -621,7 +622,9 @@ DX Gateway can be associated with a transit gateway, so no multiple DX links wil
 ![Pasted image 20221127070202](https://user-images.githubusercontent.com/109697567/204120189-e399b014-7919-48f8-93fb-639a8350e238.png)
 *Note:* All kinds of DX connections are not considered secure "although the data link is dedicated to the customer", as the data is not encrypted. This can be overcome by using IPSec upon the DX connection, as stated before in Part 1.
 
+
 # Part 3: EC2 Deep Dive
+
 ## EC2 Instance Families & Types
 ![Pasted image 20221127213655](https://user-images.githubusercontent.com/109697567/206047355-6e6c2290-7c89-43b1-bbf4-2085253b34ad.png)
 ![Pasted image 20221128052220](https://user-images.githubusercontent.com/109697567/206047372-c5c2ce67-623b-4c10-a90c-306641df232e.png)
@@ -723,6 +726,7 @@ Placement groups can be used to allow customers to influence how their instances
 - Each instance is placed in a different rack (up to 7 per AZ).
 - One or more AZS.
 - Used for applications with a small number of critical instances that need to be separated from each other.
+![[Pasted image 20221207231852.png]]
 
 #Billing
 ## EC2 Billing
@@ -905,7 +909,9 @@ AWS Batch is a fully managed service that simplifies running batch jobs "recurri
 - It can scale to hundreds of thousands of batch computing jobs. 
 - Use cases include digital media rendering, drug screening, and post trade analysis.
 
+
 # Part 4: Elastic Load Balancing & Auto Scaling Deep Dive
+
 ## Target Groups, Listeners, & Health Checks
 Load Balancer is a REGIONAL construct, cannot create load balancers for applications across multiple regions.
 
@@ -930,7 +936,7 @@ It deals with the private IP address given too the ENI-ELB.
 
 ### Target Groups
 It's a logical grouping of targets, targets can be EC2 Instances, IP addresses, or ECS microservice.
-- A target is an endpoint registered with the ALB/NLB as part of a target group.
+- A target is an endpoint registered with the ***ALB/NLB*** as part of a target group.
 - IP addresses can be used to add targets that are instances in a peered VPC, on- premises servers, and AWS resources that can be addressed by IP and port. 
 - ALB/NLB can route traffic to multiple target groups.
 - A target can be registered with a target group multiple times using different ports.
@@ -941,7 +947,7 @@ A listener is the process that checks for connection requests to the ELB nodes, 
 - On ALB/NLB, frontend is the same as CLB, but backend is configured at the target group.
 ![Pasted image 20221206033843](https://user-images.githubusercontent.com/109697567/206048375-9fc2a748-c7ef-4568-9d8f-d8dd095e54b0.png)
 
-### EBS Health Checks
+### ELB Health Checks
 A load balancer decouples the application layer by concealing the failure in one tier from other tiers.
 - Health checks are used by the elastic load balancer to track the health and responsiveness of the backend compute.
 - Health check ports and thresholds are configurable.
@@ -958,5 +964,5 @@ A rule can be given to each listener to specify a specific job "*ex:* specific P
 ![Pasted image 20221206035115](https://user-images.githubusercontent.com/109697567/206048394-979d82b8-8868-4425-ada5-0a3c96983791.png)
 ![Pasted image 20221206035943](https://user-images.githubusercontent.com/109697567/206048412-46195733-e291-4b71-ae3c-e43ba570e8fb.png)
 
-#### EBS is on the EC2 Dashboard in Console:
+## ELB is on the EC2 Dashboard in Console:
 ![Pasted image 20221206035509](https://user-images.githubusercontent.com/109697567/206048439-b7790ab2-1d37-4055-ab68-262a01aec959.png)
