@@ -966,3 +966,586 @@ A rule can be given to each listener to specify a specific job "*ex:* specific P
 
 ## ELB is on the EC2 Dashboard in Console:
 ![Pasted image 20221206035509](https://user-images.githubusercontent.com/109697567/206048439-b7790ab2-1d37-4055-ab68-262a01aec959.png)
+
+## Cross-Zone Load Balancing
+Applying the traffic equally upon instance level, instead of node level.
+*ie:* Applies distribution of traffic among different AZs instead of among EC2 instances in the same EZ only.
+- Ensures higher availability & fault tolerance.
+- Enabled by default in CLB.
+- Enabled by default in ALB.
+- Disabled by default & Chargeable in NLB.
+![Pasted image 20221207153739](https://user-images.githubusercontent.com/109697567/206869736-ddb531ba-37dd-4684-9894-9f1ae9b4940c.png)
+
+## Connection Draining
+Suppose some EC2 instances is required to be deregistered from the ELB for troubleshooting, what happens to the sessions on these instances.
+When a backend instance or a target from a target group attached to an ELB is deregistered from the ELB:
+- ELB stops sending any further traffic to this instance/target.
+- ELB waits for a deregistration (or connection draining) delay, during which in-flight sessions through that instance/ELB are given time to finish.
+- Deregistration delay is 300 seconds by default.
+- If the deregistration delay is met & the instance still didn't end current sessions, Traffic/Sessions will be dropped.
+
+## ELB High Availability Design For Subnets
+- AWS Recommends using ELB across minimum of 2 AZ.
+- If the ELB is an internet-facing ELB, the enabled subnets have to be public subnets "subnets with routes accessing the internet" for the ENI.
+- Backend or targets can be in public or private subnets.
+![Pasted image 20221207160130](https://user-images.githubusercontent.com/109697567/206869742-645bb0d6-0563-41e8-ae7b-ae1841256977.png)
+*Note:* NAT Gateways can be used in HA Design for private subnets accessing the internet.
+
+## ELB - Security Groups
+- Applying security Groups to the ELB can be done.
+- Security Groups are not applicable on NLB.
+- The concept is setting the security groups as source instead of using IP addresses.
+- Security groups are stateful.
+- Make sure that the NACLs allow subnets communications
+- AS the NLB cannot have security groups, it only have the NACL of the subnet. Instead of setting the security group as source, the NLB Nodes IP/Subnet range is set.
+- Notice the security groups of each of the ELBs & the instances:
+![Pasted image 20221207162035](https://user-images.githubusercontent.com/109697567/206869744-dc2621eb-e99a-4602-a995-1c490851d928.png)
+
+## ELB & Digital Certificates
+X.509/TLS/SSL or Digital Certificates is a digital file that is used to certify the ownership/binding between a public cryptographic key to an entity that must be named in the subject field. 
+- The entity can be a person, organization, web entity, or a software distribution.
+- The certificate includes the public key and information about who issued it (the Certificate Authority).
+- Certificate Authority (CA) ensure that people cannot claim others' IDs by issuing fake digital certificates.
+![Pasted image 20221207170045](https://user-images.githubusercontent.com/109697567/206869769-c6e05c08-3b7a-4626-96c1-a7d056b7b768.png)
+
+### Digital Certificates on ELB
+ELB deals with the traffic, so it must have the certificate the clients will require for connection.
+##### CLB
+- Can do both SSL & HTTPS "Layer 4 & Layer 7".
+- Can have one certificate.
+##### ALB
+- Can do HTTPS only "Layer 7".
+-  Can have multiple certificates.
+##### NLB.
+- Can do only SSL "Layer 4"
+-  Can have multiple certificates.
+
+#### SSL Offloading
+SSL offloading is when the ELB will terminate TLS/HTTPS sessions from clients then establish clear or unencrypted sessions to the backend.
+- Encryption is done on the Client to ELB side.
+- Backend instances/targets do not have to process TLS/HTTPS handshake and the associated secure sessions overhead.
+- Meaning that the backend won't need encrypted traffic.
+- Termination is done on the ELB.
+![Pasted image 20221207172807](https://user-images.githubusercontent.com/109697567/206869780-cf6c62c9-7a5c-4202-a9a1-54070de5c31b.png)
+
+#### TCP Passthrough
+TCP Passthrough is when the backend is responsible for termination of TLS/HTTPS sessions from clients.
+- End-to-end in-transit (in-flight) encryption is required between the client and EC2 backend instances or targets.
+- ELB should not be involved in any SSL negotiation (decrypting and re-encrypting traffic).
+- Meaning no encryption is done on the client to ELB or the ELB to backend sides. 
+- Termination is done on the backend.
+![Pasted image 20221207173455](https://user-images.githubusercontent.com/109697567/206869792-349a4381-152f-485b-99bf-ff4816803bf7.png)
+
+#### Server Name Indication "SNI"
+SNI or Server Name Indication is an extension to TLS.
+- Clients that support SNI can indicate which domain they are trying to connect to during the handshake.
+- Servers supporting SNI can read this HTTP header and respond with the correct domain certificate.
+- It's not a DNS service, it only provides the correct certificate from multiple certificate.
+- Supported by ALB, NLB "as they can hold multiple certificates".
+![Pasted image 20221207174224](https://user-images.githubusercontent.com/109697567/206869803-85148ff3-cd27-4e31-b9a4-72c6b2019939.png)
+
+## ELB & Client IP Address
+Normally, ELB nodes will send their own IPv4 address as source IP address in the packets forwarded. Suppose it's required for the applications to be able to know the actual client IP addresses, not that of the ELB Node.
+
+The following ways used to provide the client IP address to the backend:
+##### X-Forwarded
+- For at layer 7 listeners.
+- CLB & ALB.
+- Client IP is in put in Header.
+##### Proxy Protocol
+- At layer 4 listeners.
+- CLB & NLB.
+- Client IP is put in the proxy data not the Header.
+- If the Instance IDs were used in the target groups, NLB automatically preserves client IP addresses when the instances are registered to their target groups using instance IDs.
+*ie.* Proxy Protocol is not needed in NBL if the instances were defined using instance ID, but is used in case of IP addresses or Lambda functions defining of instances in the target group.
+![Pasted image 20221207182608](https://user-images.githubusercontent.com/109697567/206869853-5b0627be-5796-4b3a-a7c6-04bbd9f30274.png)
+
+## ELB Monitoring & Logging
+Monitoring ELB in AWS can be achieved by:
+- ###### CloudWatch:
+	- By default ELB service will send ***metrics*** to CloudWatch every minute if there is traffic flowing through the ELB nodes
+- ##### CloudTrail:
+	- CloudTrail logs all ***API Calls*** made to ELB APIs.
+ - ##### Access Logs:
+	 - Provides logs about ***actual traffic, Client IP, Protocol, Port,*** basically about the actual session information. Disabled by default.
+
+## Session Affinity (Sticky Sessions)
+Session stickiness refers to a configuration whereby the ELB will bind a client to a specific backend instance/target.
+- This is supported by all ELBs. 
+- Session stickiness is not fault tolerant. 
+- Used with stateful applications, or applications that can not maintain session state.
+- Applied on the target group not the ELB.
+*Note:* Stateful applications are applications that stores cache & cookies on the instant, so faulting of the instance means losing of data access.
+
+## Perfect Forward Secrecy
+Perfect Forward Secrecy (PFS) helps prevent the decoding of captured encrypted data by unauthorized third parties, even if the private key gets compromised.
+- Concept is allowing using changing encryption keys.
+- It does that by using session keys that are ephemeral and not stored anywhere.
+- Uses Elliptic Curve Diffie-Hellman Ephemeral (ECDHE) Protocol.
+
+
+## Application Load Balancer (ALB)
+-  supports: HTTP, HTTPS, HTTP/2 
+- Supports Web Application Firewall (WAF): You can use AWS WAF with Application Load Balancer (ALB) to allow or block requests based on the rules in a web access control list (web ACL). 
+- Internet-facing ALB supports IPv4 and DualStack. 
+- ALB supports WebSockets by default "Server Initiating messages to client".
+- ALB supports round robin (default), and least outstanding requests load balancing algorithms
+	- Round Robin: Distributes work among targets equally.
+	- Least Outstanding Requests: Sends traffic to less stressed instances.
+
+### Path-Based & Host-Based Routing
+Supported ONLY for ALB.
+An Application Load Balancer supports specific content routing traffic to a specific target group based on:
+- The HTTP path header of the URL.
+	www.example.com/images
+	www.example.com/videos
+- The HTTP hostname header of the URL.
+	offers.example.com
+	sales.example.com
+- This is also possible for HTTPS traffic.
+![Pasted image 20221207190102](https://user-images.githubusercontent.com/109697567/206869876-e4f2f340-6975-4e78-8657-c038d440ff73.png)
+
+### Slow Start Mode
+Supported ONLY for ALB.
+By default, a registered target starts receiving its full share of requests as soon as it becomes healthy.
+- This is a target group level configuration.
+- Slow-start mode gives a target time to warm up before receiving the full share of requests.
+- During this period, the ALB increases the requests sent to this target gradually towards full share, which happens when the slow-start time ends.
+
+
+## Network Load Balancer (NLB)
+- NLB provides the highest connections speed and lowest latency among all ELBs.
+- Supports TCP & UDP load balancing.
+- NLB can be assigned an Elastic IP per enabled AZ if desired.
+- Access logs, cross-zone load balancing, and delete protection are disabled by default, & chargeable.
+- Supports client connections over VPC peering, AWS VPNs and 3rd party VPNs.
+
+### AWS PrivateLink & VPC Endpoints
+- Used with Interface VPC Endpoints.
+- AWS PrivateLink-powered services are created in a VPC, also called ***VPC Endpoint Services***.
+- Requirement is to have a NLB in the provider VPC and an Interface VPC Endpoint in the consumer VPC. Together, they constitute the Private Link to this service.
+- Provider VPC can control via permissions which principals can connect via interface endpoints.
+
+#### AWS PrivateLink & VPC Endpoints High Availability
+- High Availability is applied by configuring the NLB and interface endpoints in each AZ in that AWS region.
+- Consumers use DNS names for the endpoints to connect to the services. 
+- It's advised to enable cross-zone load balancing on the NLB to ensure each NLB node can route to all EC2 instances, but it's chargeable.
+![Pasted image 20221207220244](https://user-images.githubusercontent.com/109697567/206869888-0ed79ca5-0cc1-4d09-9da7-2f83e61edfcd.png)
+
+### Gateway Load Balancer
+It is a service that makes it easy and cost-effective to deploy, scale and manage the availability of third-party virtual applications such as Firewalls, Intrusion detection and prevention systems, and deep packet inspection systems in the cloud.
+- Internet traffic goes from the IGW to the Gateway Load Balancer, & the Gateway Load Balancer redirects it to a NLB attached to a target group with the third-party virtual appliances, then after the application ends its work, the Gateway Load Balancer gets the traffic back & sends it to the original destination EC2 Instances.
+- Traffic from the instance to internet "response" works the same way.
+This is done via routing tables of the subnets.
+- Subnet level service & has its own subnet.
+![Pasted image 20221207221721](https://user-images.githubusercontent.com/109697567/206869925-09c4110e-4c19-4f28-9a2a-ce4acb2a5c72.png)
+
+## Load Balancers are under the EC2 Dashboard in Console
+![Pasted image 20221210202912](https://user-images.githubusercontent.com/109697567/206870014-5674671c-3edc-4ef1-bd6c-7409765e1106.png)
+
+
+# Part 5: AWS Auto Scaling Deep Dive
+AWS Auto Scaling allows for the configuration of automatic scaling for the AWS resources that are part of an application very quickly. 
+- Automatic scaling can be configured for individual resources or for applications.
+- Auto Scaling can be used with EC2, Spot Instances, DynamoDB, Aurora, Amazon ECS among other services.
+
+Auto Scaling is useful for applications that experience daily or weekly variations in traffic flow such as:
+- Cyclical traffic patterns.
+- On and Off traffic patterns.
+- Variable traffic patterns.
+
+## Application Auto Scaling
+Application Auto Scaling is a web service for automatically scaling resources for services beyond Amazon EC2. 
+- It can be used with Auto Scaling and EC2 Auto Scaling to scale resources across multiple services including:
+	- ECS services 
+	- Spot Fleet requests
+	- EMR Clusters 
+	- AppStream 2.0 fleets
+	- Aurora Replicas DynamoDB Read and Write Capacity units
+	- SageMaker endpoints
+	- Amazon Comprehend
+
+## EC2 Auto Scaling
+- It's a Regional service
+- It can span multiple Availability Zones in the same AWS Region.
+- It integrates with ELB, CloudWatch, and Cloud Trail.
+- It is free to use, but customers pay only for EC2 and EBS resources used. 
+- ASG will try to balance resources across Availability Zones.
+- The EC2 Auto Scaling configuration components are:
+	 - ##### An Auto Scaling Group 
+		- Is the logical grouping of managed instances.
+		- Desired no. is the starting no. of instances to launch.
+	- ##### A Launch Configuration (or A Template)
+		- The template for instance configurations. 
+	- ##### A Scaling Policy (Plan) 
+		- Defines the when and how to scale out or in.
+![Pasted image 20221207224003](https://user-images.githubusercontent.com/109697567/206870031-56f2b7ff-2e29-41b8-96d1-56d1aacffee1.png)
+*Note:* Launch Templates are preferred over Launch Configurations by AWS, as future updates are concerning Launch Templates.
+
+### EC2 Auto Scaling: Launch Templates
+Launch Templates serves the same purpose as launch configuration, where it defines the EC2 instance configuration. AWS recommends using it over launch configuration.
+However it has the following advantages over launch configurations:
+- It can have different versions.
+- It allows the use of multiple instance types and can use On-Demand and Spot instances in the same Auto Scaling group.
+- We can define a placement group in the template such that instances will be launched in that placement group "Check placement groups in Part3".
+This would help achieve the desired scale, cost, and performance.
+
+### EC2 Auto Scaling: Health Checks
+By default the EC2 Auto Scaling service determines if the instance is running or not via EC2 status check, even with ELB applied.
+- This can be changed when creating Auto Scaling Group in the console to wait for EC2 status check ***AND*** the ELB health checks.
+- If either of the two checks states a negative response, the instance is terminated.
+![Pasted image 20221207230640](https://user-images.githubusercontent.com/109697567/206870037-3978be11-2707-41b4-8d13-092214ecc094.png)
+
+### EC2 Auto Scaling: Types
+Auto Scaling policy types: 
+- ##### 1- Manual
+	- This is to maintain a current number of Instances at all times.
+	- Manually change the Min/Desired/Max & Attach/Detach instances.
+- ##### 2- Cyclic or Schedule Scaling
+	- Used with predictable load change to add Instances and remove them after the desired duration (daily, weekly, monthly).
+- ##### 3- On-Demand or Dynamic Scaling
+	- Scaling in response to an alarm/event.
+	- CloudWatch monitors metrics and generates alarms for auto scaling to scale out/in.
+	- Has 3 types:
+		- **Simple Scaling:** A single adjustment up or down in response to the alarm.
+		- **Step Scaling:** Multiple Steps/Adjustments depending on different Alarms.
+		- **Target Tracking Scaling:** Scale out or in based on a target value for a specific metric.
+- ##### 4- Predictive Scaling
+	- Combines proactive and reactive scaling.
+
+### EC2 Auto Scaling: Lifecycle Hooks
+- Lifecycle hooks enables performing custom actions "such as checking logs" by pausing instances as an auto scaling group launches or terminates these instances.
+- When an instance is paused, it remains in a wait state either until the lifecycle action is completed or until the timeout period ends (one hour by default).
+![Pasted image 20221208001552](https://user-images.githubusercontent.com/109697567/206870041-52d1732f-a4a1-4734-94b6-318e4e72d41e.png)
+
+### EC2 Auto Scaling: Cooldown & Warm-up Periods
+##### Cooldown Period
+- After a scale-out or scale-in activity.
+- Is the amount of time Auto Scaling waits after a scale-out or scale-in activity before another scale activity can start. 
+- This help ensure that the impact of the scaling activity becomes visible.
+##### Instance Warm-up Period
+- After a scale out activity.
+- Is the amount of time that elapses before a newly launched instance (due to a scale-out activity) begins contributing to CloudWatch metrics.
+- Basically to allow new launched instances to start giving impact after fully launching.
+
+### EC2 Auto Scaling: Scale-in Termination Protection
+Instances can be protected from being automatically terminated during a scale-in event using Scale-in instance protection.
+This setting can be changed at the Auto Scaling Group level.
+
+However, this does not protect the instance from:
+- Manual termination. 
+- Replacement if it becomes unhealthy.
+- Spot instance interruption.
+
+### EC2 Auto Scaling: Termination Policy
+Which Instance is to be terminated??
+
+- The AZ with the larger number of EC2 instances is selected first for termination.
+- If there is a mix of launch configuration and Launch Template instances, ones with launch configuration are selected first for termination.
+- AS terminates the instance with the oldest launch configuration first.
+- If they are all the same, AS terminates the one that is closest to billing hour.
+![Pasted image 20221208003255](https://user-images.githubusercontent.com/109697567/206870048-1f96f91b-6381-4e89-9a41-fdbbaaabbf20.png)
+
+
+# Part 6: SQL-Based "Relational" Databases Services
+
+## Data Types:
+#### SQL (Structured Data)
+- Data that is ready to be included in a relational database.
+- Tabled data is an example.
+#### NoSQL (Unstructured Data)
+- Data that is ready to be included in a relational database.
+- Emails, word processing documents, presentations, audio and video files, webpages are examples.
+#### No-SQL (Semi-Structured Data)
+- CSV & JSON files.
+
+
+# *〔1〕RDS (Amazon Relational Database Service)*
+**{{OLTP DB: On-Line Transactional Processing Databases}}**
+
+It is a fully managed relational DB from AWS.
+- Supports MS SQL, MySQL, MariaDB, PostgreSQL, Oracle and Amazon Aurora. 
+- Launches inside your VPC. However, you do not have root access or OS access for the DB instances.
+- Use self-managed DB (on EC2) if OS control or root access is required.
+- RDS integrates with SNS for event notifications.
+- Mentioned short notes about RDS in Part 1:
+	- RDS Launches the database inside the VPC.
+	- It's advised to be put inside a private subnet.
+	- A security group can be attached to the RDS database.
+	- RDS instance can be launched in a standalone mode "single AZ" or Multi-AZ mode (Primary instances for read/write & Standby RDS instances for instant data replication only).
+	- It supports auto scaling.
+
+## Standby DB instance & RDS for Multi-AZ
+RDS can be configured for Multi-AZ deployment during or after launch. RDS service creates a standby instance in the same region but in a different Availability Zone.
+- For data replication.
+- Synchronous/immediate data replication from primary to standby is configured by RDS service.
+- CANNOT read or write to the standby instance. 
+
+## RDS Failover for Multi-AZ
+Failover means using the Standby DB in case of failier.
+Failover maybe triggered when: 
+- Primary AZ or Primary DB instance failure.
+- Loss of network connectivity to primary DB.
+- Compute or Storage failure on primary.
+- Patching the primary DB instance OS "As a reboot may be needed".
+- The DB instance's server type is changed.
+- Manual failover (reboot with failover) on primary.
+
+Applications should use the DNS Hostname of the RDS DB and not the IP addresses. *Why??*
+Because when a Standby RDS is used it's set as the primary database, & the original primary DB is set to Standby "exchange roles". 
+- So the DNS will redirect to the right IP address after changing.
+- Amazon RDS update the standby IP to correspond to the RDS DB Hostname when the primary fails over to the standby.
+![Pasted image 20221208005801](https://user-images.githubusercontent.com/109697567/206870125-d2d5e308-c4fe-4df6-a4ef-7ef4854dd662.png)
+
+## RDS Automated Backup
+It's a point-in-time copy of the entire database (DB)
+- Taken daily.
+- Enabled by default.
+- Creates a storage volume snapshot of the entire DB that gets stored in an S3 Bucket ***not owned by the customer***.
+- Snapshots are retained for seven days by default (0 to 35 days configurable).
+- The automated backup can be used to restore the DB up to five minutes in time.
+- If the DB is on Multi-AZ, the backup is taken from the Standby DB instance in order of not affecting the performance of the primary DB.
+- Automated DB backups are deleted when the DB gets deleted.
+
+## Manual DB Snapshots
+Manual snapshots are the ones manually created during the lifetime of the DB instance. 
+- They get stored in S3.
+- Manual snapshots do not get deleted automatically when the DB is deleted.
+- AWS recommends taking a final snapshot of the DB before deleting it.
+
+## Restoring from Backups
+- Restoring happens to a new DB, no overwriting to the old one.
+- The DB storage type can be changed during a restore process.
+- Automated snapshots can be used to restore to any point-in-time during the retention period of the snapshot. AWS RDS will use the transaction logs to restore up to 5 minutes in time.
+- We can restore from a manual snapshot, but we cannot specify a point in time to recover to.
+
+## Copying & Sharing DB Snapshots
+##### Copying:
+Both automated backups and manual snapshots can be copied.
+- In either case the resulting copy is considered a manual snapshot. 
+- Copying snapshots can happen within the same or different regions. 
+##### Sharing:
+Manual encrypted or un-encrypted snapshots can be shared with other accounts.
+- Shared snapshots by other accounts can also be copied. 
+- Automated backups cannot be shared with other accounts. 
+**Workaround:** copy the automated backup into a manual snapshot, then share the copy.
+
+## Scaling RDS: Auto Scaling
+Amazon RDS supports storage auto scaling. 
+- When enabled, RDS Auto Scaling will automatically scale storage capacity on-demand with zero downtime. 
+- Auto Scaling in RDS is storage scaling. 
+- It can be enabled on existing or new RDS instances.
+- Fully Managed service as stated before.
+
+## Scaling RDS: Vertical Scaling
+Vertical scaling refers to changing the instance or storage of the same RDS instance.
+- Only Scales up, no scaling down.
+- Scaling instance type and storage are decoupled, scaling each separately.
+*ie.* It is possible to change the database storage volume size or type (Ex. general purpose to Provisioned IOPS to enhance performance). 
+
+## RDS Horizontal Scaling using Read Replicas (Scaling Read Operations)
+It's a DB with a replica of the data, & it has a READ ONLY status.
+- Allows reading the data without affecting performance of the primary DB.
+- Data replication is ***Asynchronous***.
+- Can be set up in a Multi-AZ configuration, & the data replication to the Read Replica can happen through the Standby DB instance to enhance performance of the Primary DB even more.
+- Can be in a different AZ in the same region or a different region.
+- The Read Replica's storage type or instance class can be different from those on the primary DB Instance.
+- Can be later used as a primary DB in case of a failure.
+- Can be later used as a totally separate DB if needed.
+![Pasted image 20221208013222](https://user-images.githubusercontent.com/109697567/206870140-f02f1b84-66f8-4962-b889-e4aac01adbee.png)
+
+## RDS Encryption
+Amazon RDS supports encryption at rest using AWS KMS encryption keys. 
+- If encryption is enabled on RDS, the underlying DB storage "EBS volumes", DB logs, automated backups, DB manual snapshots, and Read Replicas will all be encrypted.
+- The Read Replica encryption status is like that of the primary.
+* Communication between the RDS Client and RDS DB can be TLS/SSL encrypted.
+
+##### Communication between the RDS Client and RDS DB:
+- The RDS Server has a digital root certificate.
+- Upon creating an RDS DB, the RDS Root Certificate is downloaded on the Primary DB,
+- When a Client connects with RDS DB with SSL connection, the DB responds with the RDS Root Certificate.
+![Pasted image 20221208015017](https://user-images.githubusercontent.com/109697567/206870147-709b9d02-9bc0-494d-a76d-d65652c7b709.png)
+
+## Transparent Data Encryption (TDE)
+Encryption feature for Oracle & MS SQL.
+- Transparent Data Encryption (TDE) is an encryption where data is client-side encrypted before being written to the RDS DB.
+- TDE for Oracle and MS SQL can be used simultaneously with RDS encryption at rest.
+
+## RDS Authentication
+Connection to RDS is done via username & password.
+Another way is using IAM Authentication:
+### IAM DB Authentication for MYSQL & PostgreSQL
+Used to access MySQL and PostgreSQL RDS databases.
+- Authentication is done by an authentication Token (its lifetime is 15 minutes) which can be requested from Amazon RDS.
+- IAM user or role has to be configured in the DB with the same name.
+- Client to DB must be SSL encrypted.
+*ie.* RDS authentication uses two methods, either username & Password, or username & an authentication token.
+
+
+# *〔2〕Amazon Aurora*
+**{{OLTP DB: On-Line Transactional Processing Databases}}**
+
+Aurora is a fully managed relational DB service compatible with MySQL and PostgreSQL engines.
+- Can provide ***3x PostgreSQL*** and ***5x MySQL performance***.
+- A virtual database storage volume that spans multiple AZS.
+- Aurora maintains 2 copies of the data per AZ, & in in three AZs.
+- No standby instances, substituted by read replicas.
+- Up to 15 read-only Aurora replicas in different AZS in the same AWS Region.
+![Pasted image 20221208190057](https://user-images.githubusercontent.com/109697567/206870157-1b448d00-e525-4895-82d1-7638791e1489.png)
+
+## Aurora Scaling
+Aurora has the following scaling features:
+##### Storage Scaling:
+- Automatically adjusts the storage size in 10GB increments up to 100TB+.
+##### Read Scaling: 
+* Up to 15 Aurora Replicas. The Replicas can be placed in Multi-AZs.
+##### Aurora Auto Scaling:
+- Scales the number of Aurora replicas up and down based on need, up to 15 Replicas. 
+##### Instance Scaling:
+- We can scale the Aurora instances up or down by modifying the instance type/size.
+
+## Aurora Connection Management & Endpoints
+Incase of RDS, one Endpoint was required as there were only connecting to primary or Reading from Read Replicas.
+
+For Aurora DBs, multiple endpoints exists for connecting to them:
+##### Cluster Endpoint
+- Connects to the Primary Aurora Instance
+- .- ID Ex: 
+	***mydbcluster.cluster***-123456789012.us-east-1.rds.amazonaws.com:3306
+##### Reader Endpoint
+- Connects to an Aurora Replica.
+- Performs connection load balancing to Replicas.
+- ID Ex: 
+	***mydbcluster.cluster-ro***-123456789012.us-east-1.rds.amazonaws.com:3306
+##### Instance Endpoint
+- Connects to a specific Instance
+- - ID Ex: 
+	 ***mydbinstance***.123456789012.us-east-1.rds.amazonaws.com:3306
+
+## Aurora Replicas - Aurora Backup
+Aurora Replicas serve as backup replicas.
+- It can return the data written by the primary instance in less than 100msec. 
+- To increase availability, Aurora Replicas can be used as failover targets. If the primary instance fails, an Aurora Replica is promoted to the primary instance.
+- Aurora database supports automated backups and manual snapshots the same way as in Amazon RDS.
+
+## Aurora Infrastructure Security & Authentication
+Aurora clusters are launched in a VPC. 
+The VPC must have DB subnet groups, with one subnet in each of at least two Availability Zones.
+- Security groups are associated with the cluster & can be used to control access to DB.
+- Aurora supports TLS/SSL connections to these endpoints. 
+- IAM DB authentication can be used with Aurora MySQL as in the case with RDS.
+- Aurora APIs are accessible from within a VPC using VPC Interface endpoints "For configuring the service".
+
+## Aurora Encryption
+Same way as RDS, Encryption can be enabled on the Aurora cluster
+- The database cluster will be encrypted at rest, including the underlying storage volumes. 
+- If an Aurora cluster is encrypted, the cluster storage and data, its snapshots, automated backups and Aurora replicas will all be encrypted too.
+- We can't change the encryption status of a cluster.
+- We can restore from an unencrypted Aurora DB cluster snapshot into an encrypted Aurora DB cluster. 
+- A replica's encryption status follows that of the DB cluster.
+
+## Aurora Global DB
+- Consists of one read/write cluster primary region & Up to 5 secondary read-only cluster regions.
+- Secondary clusters regions can have up to 16 Aurora replicas each, no primary/master instances "15 replicas+1 failover for primary".
+- Replication happens using a dedicated replication **physical** infrastructure with latency of less than 1 second.
+- Failover is possible in less than one minute.
+![Pasted image 20221208210838](https://user-images.githubusercontent.com/109697567/206870174-e3af11ba-dbc5-449e-b336-e54876e78c5a.png)
+
+## Aurora Cross-Region Replication Options
+Using Aurora for cross-regional replications is recommended by AWS & is better than MySQL DBs, because:
+- Faster Replication. <1sec
+- Less failover time. <1min
+- Data transfer charges don't apply, while it's chargeable in case of MySQL DB
+- Aurora supports MySQL & PostgreSQL.
+
+## Aurora Cluster Backtracking
+Backtracking is simply rewinding your DB cluster to a time you specify without restoring from a backup. Can be used to undo mistakes or explore changes made to the DB cluster.
+- This Service is only for Aurora DBs, & not in RDS.
+- Can backtrack back and forth.
+
+## Aurora Multi-Master Clusters
+Also referred to as multi-writer cluster. It is an Aurora cluster where all instances can handle read/write operations.
+- If a writer instance fails, there is immediately another one that takes over without interruption (***Continuous Availability*** which is better than HA).
+- Used for applications where we can't afford even a brief downtime.
+- Currently, multi-master clusters have many feature limitations compared to single master clusters.
+
+## Aurora Serverless
+Aurora Serverless is an on-demand, autoscaling configuration of Amazon Aurora.
+- It manages a warm pool "Ready & booted pool" of resources in an AWS region to minimize scaling time.
+- Runs on the same architecture as Aurora (provisioned DB clusters).
+- Supports TLS/SSL client/app connections.
+- It starts and scales compute capacity (DB nodes) per applications' usage and shuts it down when no longer required.
+Aurora Serverless clusters can be accessed from within a VPC using two VPC endpoints.
+
+##### Aurora Serverless can be used for: 
+- Infrequently used applications (low volume sites).
+- New applications when DB instance sizes are unknown.
+- Variable or unpredicted workloads.
+- Development and test databases. 
+- Multi-tenant applications.
+
+## Aurora is under RDS Dashboard on Console
+![Pasted image 20221208212327](https://user-images.githubusercontent.com/109697567/206870187-c81fa8ba-4991-41d1-98d3-dffe2578d4a6.png)
+
+
+# *〔3〕Amazon RedShift*
+**{{OLAP DBs: On-Line Analytical Processing DBs}}**
+		*Note:* Analytical DBs has two types:
+		- Realtime Analytical DB
+		- Historical Analytical DBs
+
+Amazon RedShift is a Database service for analytics collected over a period called historical analytical database.
+- Amazon RedShift is a Historical OLAP DB service.
+
+## Data Warehouse
+A data warehouse is a collection of data collected from different sources, which then undergoes complex long queries for analytics, business reporting, and visualization purposes.
+- A data warehouse is a relational DB "support SQL queries" that is designed for analytics (OLAP) rather then Transaction processing (OLTP).
+- On-Line Analytical Processing (OLAP) is characterized by relatively low transactions volume and very complex queries that involved aggregations.
+
+## RedShift Service
+Amazon RedShift is a fully managed data warehouse service (OLAP) in AWS.
+- Petabyte Scale, so capable of storing large size of data
+- It provides fast querying over structured data using familiar SQL based clients "using ODBC, JDBC connections" and business intelligence (BI) tools "Quicksight, Tableau, etc."".
+- Uses columns rather than rows to store data. This is 10x faster than transactions SQL databases.
+- Uses advanced compression, and Massive parallel processing of data.
+- Despite its high storage ability, it can't take a large data ingestion in real time "stores the data for later analyzing".
+- Works in one AZ inside the VPC.
+- RedShift is a pay-as-you-go service (no upfront commitments).
+
+## RedShift Availability
+- RedShift doesn't support Multi-AZs, snapshots can be used for data recovery.
+- Can be single-node or multi-node clusters "in a single AZ". Leader and compute nodes. 
+- Clusters are launched in a single AZ. 
+- RedShift automatically replicates all data with the cluster. It keeps three copies of the data.
+- RedShift can fully recover from a node or component failure.
+- RedShift automatically patching and data backup. performs node
+![Pasted image 20221210012819](https://user-images.githubusercontent.com/109697567/206870383-8734a183-37e7-4808-b950-3322b81d099d.png)
+
+## RedShift concurrency Scaling
+Allows RedShift to support virtually unlimited concurrent users and queries while maintaining consistent high performance. 
+- This is achieved by automatically adding additional cluster capacity (concurrency scaling cluster) when required.
+
+## RedShift Backup & Restore
+RedShift automatically takes incremental backups 
+- Snapshots are taken every 8 hours or 5GB of data.
+- Restoring from a backup happens to a new cluster in the same or different AZ.
+- Manual backups are also possible.
+- RedShift can be configured to copy snapshots when they are created to another AWS Region.
+
+## RedShift Data Sources & Security
+##### Data Sources: 
+- S3 (Parallel reads).
+- COPY command (EMR, EC2, DynamoDB).
+- Data Pipeline (S3 or DynamoDB).
+- Database Migration Service.
+##### Security:
+- Redshift supports encrypting data at rest (disabled by default).
+- Customer can manage their keys through Amazon HSM or use KMS keys.
+- Snapshots created from an encrypted Redshift cluster are also encrypted.
+- Redshift supports encrypting data in-transit using SSL.
+
+## Redshift WLM & Enhanced VPC Routing
+##### Workload Management (WLM)
+- Is a way to define a number of query queues such that short running queries are not stuck in queues behind long-running ones.
+##### Enhanced VPC Routing
+- Forces traffic between your Redshift cluster and S3 to go over a VPC endpoint.
