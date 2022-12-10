@@ -1295,6 +1295,7 @@ Applications should use the DNS Hostname of the RDS DB and not the IP addresses.
 Because when a Standby RDS is used it's set as the primary database, & the original primary DB is set to Standby "exchange roles". 
 - So the DNS will redirect to the right IP address after changing.
 - Amazon RDS update the standby IP to correspond to the RDS DB Hostname when the primary fails over to the standby.
+
 ![Pasted image 20221208005801](https://user-images.githubusercontent.com/109697567/206870125-d2d5e308-c4fe-4df6-a4ef-7ef4854dd662.png)
 
 ## RDS Automated Backup
