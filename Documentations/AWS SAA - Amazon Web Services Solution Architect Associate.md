@@ -512,7 +512,7 @@ Here comes the use of Transit Gateway, as it can simplify communication requirem
 ## VPC Endpoints
 Used for making applications/instances on private subnets connect to AWS services "as S3 Buckets" without a public end point "no internet access".
 *ie:* Traffic going from the private subnet to the service does not go through the internet.
-- They are virtual devices, that are redundant, scalable, & highly available.
+- They are vir``tual devices, that are redundant, scalable, & highly available.
 - They allow VPC workloads to connect to supported AWS services without leaving the AWS network, thus no need of NAT instances or gateways.
 - It has two types : **Gateway or Interface Endpoints***. "usage of each is according to the service."
 *Note:* Only S3 & DynamoDB uses Gateways Endpoints, while services inside the VPC use Interface Endpoints.
@@ -974,7 +974,7 @@ Applying the traffic equally upon instance level, instead of node level.
 - Enabled by default in CLB.
 - Enabled by default in ALB.
 - Disabled by default & Chargeable in NLB.
-![Pasted image 20221207153739](https://user-images.githubusercontent.com/109697567/206869736-ddb531ba-37dd-4684-9894-9f1ae9b4940c.png)
+![[Pasted image 20221207153739.png]]
 
 ## Connection Draining
 Suppose some EC2 instances is required to be deregistered from the ELB for troubleshooting, what happens to the sessions on these instances.
@@ -988,7 +988,7 @@ When a backend instance or a target from a target group attached to an ELB is de
 - AWS Recommends using ELB across minimum of 2 AZ.
 - If the ELB is an internet-facing ELB, the enabled subnets have to be public subnets "subnets with routes accessing the internet" for the ENI.
 - Backend or targets can be in public or private subnets.
-![Pasted image 20221207160130](https://user-images.githubusercontent.com/109697567/206869742-645bb0d6-0563-41e8-ae7b-ae1841256977.png)
+![[Pasted image 20221207160130.png]]
 *Note:* NAT Gateways can be used in HA Design for private subnets accessing the internet.
 
 ## ELB - Security Groups
@@ -999,14 +999,14 @@ When a backend instance or a target from a target group attached to an ELB is de
 - Make sure that the NACLs allow subnets communications
 - AS the NLB cannot have security groups, it only have the NACL of the subnet. Instead of setting the security group as source, the NLB Nodes IP/Subnet range is set.
 - Notice the security groups of each of the ELBs & the instances:
-![Pasted image 20221207162035](https://user-images.githubusercontent.com/109697567/206869744-dc2621eb-e99a-4602-a995-1c490851d928.png)
+![[Pasted image 20221207162035.png]]
 
 ## ELB & Digital Certificates
 X.509/TLS/SSL or Digital Certificates is a digital file that is used to certify the ownership/binding between a public cryptographic key to an entity that must be named in the subject field. 
 - The entity can be a person, organization, web entity, or a software distribution.
 - The certificate includes the public key and information about who issued it (the Certificate Authority).
 - Certificate Authority (CA) ensure that people cannot claim others' IDs by issuing fake digital certificates.
-![Pasted image 20221207170045](https://user-images.githubusercontent.com/109697567/206869769-c6e05c08-3b7a-4626-96c1-a7d056b7b768.png)
+![[Pasted image 20221207170045.png]]
 
 ### Digital Certificates on ELB
 ELB deals with the traffic, so it must have the certificate the clients will require for connection.
@@ -1026,7 +1026,7 @@ SSL offloading is when the ELB will terminate TLS/HTTPS sessions from clients th
 - Backend instances/targets do not have to process TLS/HTTPS handshake and the associated secure sessions overhead.
 - Meaning that the backend won't need encrypted traffic.
 - Termination is done on the ELB.
-![Pasted image 20221207172807](https://user-images.githubusercontent.com/109697567/206869780-cf6c62c9-7a5c-4202-a9a1-54070de5c31b.png)
+![[Pasted image 20221207172807.png]]
 
 #### TCP Passthrough
 TCP Passthrough is when the backend is responsible for termination of TLS/HTTPS sessions from clients.
@@ -1034,7 +1034,7 @@ TCP Passthrough is when the backend is responsible for termination of TLS/HTTPS 
 - ELB should not be involved in any SSL negotiation (decrypting and re-encrypting traffic).
 - Meaning no encryption is done on the client to ELB or the ELB to backend sides. 
 - Termination is done on the backend.
-![Pasted image 20221207173455](https://user-images.githubusercontent.com/109697567/206869792-349a4381-152f-485b-99bf-ff4816803bf7.png)
+![[Pasted image 20221207173455.png]]
 
 #### Server Name Indication "SNI"
 SNI or Server Name Indication is an extension to TLS.
@@ -1042,7 +1042,7 @@ SNI or Server Name Indication is an extension to TLS.
 - Servers supporting SNI can read this HTTP header and respond with the correct domain certificate.
 - It's not a DNS service, it only provides the correct certificate from multiple certificate.
 - Supported by ALB, NLB "as they can hold multiple certificates".
-![Pasted image 20221207174224](https://user-images.githubusercontent.com/109697567/206869803-85148ff3-cd27-4e31-b9a4-72c6b2019939.png)
+![[Pasted image 20221207174224.png]]
 
 ## ELB & Client IP Address
 Normally, ELB nodes will send their own IPv4 address as source IP address in the packets forwarded. Suppose it's required for the applications to be able to know the actual client IP addresses, not that of the ELB Node.
@@ -1058,7 +1058,7 @@ The following ways used to provide the client IP address to the backend:
 - Client IP is put in the proxy data not the Header.
 - If the Instance IDs were used in the target groups, NLB automatically preserves client IP addresses when the instances are registered to their target groups using instance IDs.
 *ie.* Proxy Protocol is not needed in NBL if the instances were defined using instance ID, but is used in case of IP addresses or Lambda functions defining of instances in the target group.
-![Pasted image 20221207182608](https://user-images.githubusercontent.com/109697567/206869853-5b0627be-5796-4b3a-a7c6-04bbd9f30274.png)
+![[Pasted image 20221207182608.png]]
 
 ## ELB Monitoring & Logging
 Monitoring ELB in AWS can be achieved by:
@@ -1103,7 +1103,7 @@ An Application Load Balancer supports specific content routing traffic to a spec
 	offers.example.com
 	sales.example.com
 - This is also possible for HTTPS traffic.
-![Pasted image 20221207190102](https://user-images.githubusercontent.com/109697567/206869876-e4f2f340-6975-4e78-8657-c038d440ff73.png)
+![[Pasted image 20221207190102.png]]
 
 ### Slow Start Mode
 Supported ONLY for ALB.
@@ -1130,7 +1130,7 @@ By default, a registered target starts receiving its full share of requests as s
 - High Availability is applied by configuring the NLB and interface endpoints in each AZ in that AWS region.
 - Consumers use DNS names for the endpoints to connect to the services. 
 - It's advised to enable cross-zone load balancing on the NLB to ensure each NLB node can route to all EC2 instances, but it's chargeable.
-![Pasted image 20221207220244](https://user-images.githubusercontent.com/109697567/206869888-0ed79ca5-0cc1-4d09-9da7-2f83e61edfcd.png)
+![[Pasted image 20221207220244.png]]
 
 ### Gateway Load Balancer
 It is a service that makes it easy and cost-effective to deploy, scale and manage the availability of third-party virtual applications such as Firewalls, Intrusion detection and prevention systems, and deep packet inspection systems in the cloud.
@@ -1138,10 +1138,10 @@ It is a service that makes it easy and cost-effective to deploy, scale and manag
 - Traffic from the instance to internet "response" works the same way.
 This is done via routing tables of the subnets.
 - Subnet level service & has its own subnet.
-![Pasted image 20221207221721](https://user-images.githubusercontent.com/109697567/206869925-09c4110e-4c19-4f28-9a2a-ce4acb2a5c72.png)
+![[Pasted image 20221207221721.png]]
 
 ## Load Balancers are under the EC2 Dashboard in Console
-![Pasted image 20221210202912](https://user-images.githubusercontent.com/109697567/206870014-5674671c-3edc-4ef1-bd6c-7409765e1106.png)
+![[Pasted image 20221210202912.png]]
 
 
 # Part 5: AWS Auto Scaling Deep Dive
@@ -1179,7 +1179,7 @@ Application Auto Scaling is a web service for automatically scaling resources fo
 		- The template for instance configurations. 
 	- ##### A Scaling Policy (Plan) 
 		- Defines the when and how to scale out or in.
-![Pasted image 20221207224003](https://user-images.githubusercontent.com/109697567/206870031-56f2b7ff-2e29-41b8-96d1-56d1aacffee1.png)
+![[Pasted image 20221207224003.png]]
 *Note:* Launch Templates are preferred over Launch Configurations by AWS, as future updates are concerning Launch Templates.
 
 ### EC2 Auto Scaling: Launch Templates
@@ -1194,7 +1194,7 @@ This would help achieve the desired scale, cost, and performance.
 By default the EC2 Auto Scaling service determines if the instance is running or not via EC2 status check, even with ELB applied.
 - This can be changed when creating Auto Scaling Group in the console to wait for EC2 status check ***AND*** the ELB health checks.
 - If either of the two checks states a negative response, the instance is terminated.
-![Pasted image 20221207230640](https://user-images.githubusercontent.com/109697567/206870037-3978be11-2707-41b4-8d13-092214ecc094.png)
+![[Pasted image 20221207230640.png]]
 
 ### EC2 Auto Scaling: Types
 Auto Scaling policy types: 
@@ -1216,7 +1216,7 @@ Auto Scaling policy types:
 ### EC2 Auto Scaling: Lifecycle Hooks
 - Lifecycle hooks enables performing custom actions "such as checking logs" by pausing instances as an auto scaling group launches or terminates these instances.
 - When an instance is paused, it remains in a wait state either until the lifecycle action is completed or until the timeout period ends (one hour by default).
-![Pasted image 20221208001552](https://user-images.githubusercontent.com/109697567/206870041-52d1732f-a4a1-4734-94b6-318e4e72d41e.png)
+![[Pasted image 20221208001552.png]]
 
 ### EC2 Auto Scaling: Cooldown & Warm-up Periods
 ##### Cooldown Period
@@ -1244,7 +1244,7 @@ Which Instance is to be terminated??
 - If there is a mix of launch configuration and Launch Template instances, ones with launch configuration are selected first for termination.
 - AS terminates the instance with the oldest launch configuration first.
 - If they are all the same, AS terminates the one that is closest to billing hour.
-![Pasted image 20221208003255](https://user-images.githubusercontent.com/109697567/206870048-1f96f91b-6381-4e89-9a41-fdbbaaabbf20.png)
+![[Pasted image 20221208003255.png]]
 
 
 # Part 6: SQL-Based "Relational" Databases Services
@@ -1296,7 +1296,7 @@ Because when a Standby RDS is used it's set as the primary database, & the origi
 - So the DNS will redirect to the right IP address after changing.
 - Amazon RDS update the standby IP to correspond to the RDS DB Hostname when the primary fails over to the standby.
 
-![Pasted image 20221208005801](https://user-images.githubusercontent.com/109697567/206870125-d2d5e308-c4fe-4df6-a4ef-7ef4854dd662.png)
+![[Pasted image 20221208005801.png]]
 
 ## RDS Automated Backup
 It's a point-in-time copy of the entire database (DB)
@@ -1353,7 +1353,7 @@ It's a DB with a replica of the data, & it has a READ ONLY status.
 - The Read Replica's storage type or instance class can be different from those on the primary DB Instance.
 - Can be later used as a primary DB in case of a failure.
 - Can be later used as a totally separate DB if needed.
-![Pasted image 20221208013222](https://user-images.githubusercontent.com/109697567/206870140-f02f1b84-66f8-4962-b889-e4aac01adbee.png)
+![[Pasted image 20221208013222.png]]
 
 ## RDS Encryption
 Amazon RDS supports encryption at rest using AWS KMS encryption keys. 
@@ -1365,7 +1365,7 @@ Amazon RDS supports encryption at rest using AWS KMS encryption keys.
 - The RDS Server has a digital root certificate.
 - Upon creating an RDS DB, the RDS Root Certificate is downloaded on the Primary DB,
 - When a Client connects with RDS DB with SSL connection, the DB responds with the RDS Root Certificate.
-![Pasted image 20221208015017](https://user-images.githubusercontent.com/109697567/206870147-709b9d02-9bc0-494d-a76d-d65652c7b709.png)
+![[Pasted image 20221208015017.png]]
 
 ## Transparent Data Encryption (TDE)
 Encryption feature for Oracle & MS SQL.
@@ -1392,7 +1392,7 @@ Aurora is a fully managed relational DB service compatible with MySQL and Postgr
 - Aurora maintains 2 copies of the data per AZ, & in in three AZs.
 - No standby instances, substituted by read replicas.
 - Up to 15 read-only Aurora replicas in different AZS in the same AWS Region.
-![Pasted image 20221208190057](https://user-images.githubusercontent.com/109697567/206870157-1b448d00-e525-4895-82d1-7638791e1489.png)
+![[Pasted image 20221208190057.png]]
 
 ## Aurora Scaling
 Aurora has the following scaling features:
@@ -1450,7 +1450,7 @@ Same way as RDS, Encryption can be enabled on the Aurora cluster
 - Secondary clusters regions can have up to 16 Aurora replicas each, no primary/master instances "15 replicas+1 failover for primary".
 - Replication happens using a dedicated replication **physical** infrastructure with latency of less than 1 second.
 - Failover is possible in less than one minute.
-![Pasted image 20221208210838](https://user-images.githubusercontent.com/109697567/206870174-e3af11ba-dbc5-449e-b336-e54876e78c5a.png)
+![[Pasted image 20221208210838.png]]
 
 ## Aurora Cross-Region Replication Options
 Using Aurora for cross-regional replications is recommended by AWS & is better than MySQL DBs, because:
@@ -1486,7 +1486,7 @@ Aurora Serverless clusters can be accessed from within a VPC using two VPC endpo
 - Multi-tenant applications.
 
 ## Aurora is under RDS Dashboard on Console
-![Pasted image 20221208212327](https://user-images.githubusercontent.com/109697567/206870187-c81fa8ba-4991-41d1-98d3-dffe2578d4a6.png)
+![[Pasted image 20221208212327.png]]
 
 
 # *〔3〕Amazon RedShift*
@@ -1520,7 +1520,7 @@ Amazon RedShift is a fully managed data warehouse service (OLAP) in AWS.
 - RedShift automatically replicates all data with the cluster. It keeps three copies of the data.
 - RedShift can fully recover from a node or component failure.
 - RedShift automatically patching and data backup. performs node
-![Pasted image 20221210012819](https://user-images.githubusercontent.com/109697567/206870383-8734a183-37e7-4808-b950-3322b81d099d.png)
+![[Pasted image 20221210012819.png]]
 
 ## RedShift concurrency Scaling
 Allows RedShift to support virtually unlimited concurrent users and queries while maintaining consistent high performance. 
@@ -1590,7 +1590,7 @@ DynamoDB stores data in tables. A table is a collection of data items.
 The table is indexed by a **Primary Key** or a **Composite Key**.
 - The primary key gets specified at the table creation time.
 - The primary key is an attribute that exists in each item and has a ***unique*** value in each item.
-![TestPic](https://user-images.githubusercontent.com/109697567/206947233-f0a192d0-6861-48ff-83d1-8a67bfa97207.png)
+![[TestPic.png]]
 
 ## DynamoDB Capacity Units
 Billing on DynamoDB is done on RCUs & WCUs:
@@ -1610,4 +1610,4 @@ Uses application autoscaling to adjust the RCUs and/or WCUs for a DynamoDB table
 - 
 
 ## DynamoDB is a service on Console
-![Pasted image 20221210041413](https://user-images.githubusercontent.com/109697567/206945630-15a22d6f-8daf-4ac0-a53e-b70cb81435bf.png)
+![[Pasted image 20221210041413.png]]
