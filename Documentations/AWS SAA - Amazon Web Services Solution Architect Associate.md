@@ -1590,7 +1590,7 @@ DynamoDB stores data in tables. A table is a collection of data items.
 The table is indexed by a **Primary Key** or a **Composite Key**.
 - The primary key gets specified at the table creation time.
 - The primary key is an attribute that exists in each item and has a ***unique*** value in each item.
-![image](Pasted image 20221210030112.png)
+![image](pasted image 20221210030112.png)
 ![[Pasted image 20221210030112.png]]
 
 ## DynamoDB Capacity Units
