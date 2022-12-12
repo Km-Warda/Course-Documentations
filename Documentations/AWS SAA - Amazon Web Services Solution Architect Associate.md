@@ -1610,4 +1610,4 @@ Uses application autoscaling to adjust the RCUs and/or WCUs for a DynamoDB table
 - 
 
 ## DynamoDB is a service on Console
-![[Pasted image 20221210041413.png]]
+![Pasted image 20221210041413](https://user-images.githubusercontent.com/109697567/206945630-15a22d6f-8daf-4ac0-a53e-b70cb81435bf.png)
