@@ -1550,3 +1550,64 @@ RedShift automatically takes incremental backups
 - Is a way to define a number of query queues such that short running queries are not stuck in queues behind long-running ones.
 ##### Enhanced VPC Routing
 - Forces traffic between your Redshift cluster and S3 to go over a VPC endpoint.
+
+# Part 7: NoSQL-Based Databases Services
+
+# *〔1〕Amazon DynamoDB*
+DynamoDB is a fully managed, NoSQL database that provides fast and predictable performance with seamless scalability.
+- OLTP Database.
+- Does not support complex joins or queries like SQL databases.
+- Supports semi-structured and unstructured data.
+- Supports both document "CSV & JSON" and key-value data models.
+- It saves data over the optimum number of servers according to the read/write capacity required.
+- It has a flexible schema (sometimes referred to as schema-less).
+- It uses HTTPS as a transport between application & DB.
+- Unlimited scaling without downtime or performance degradation.
+- Provides single-digit millisecond latency at any scale.
+- It has Multi-Region, ***Multi-Master*** "read & write replicas" features.
+- It is a durable database and has built-in backup and restore, in-memory caching, and security features.
+- Use cases include mobile, retail, banking, gaming, ad-tech applications and for storing session state data.
+
+## Data Consistency Model
+DynamoDB Supports:
+##### Eventual Consistency Reads
+- Might not reflect the latest data in the table.
+- Best read speed.
+##### Strong Consistency reads:
+- A read returns the latest data.
+- Needs waiting time to check all replicas for the data.
+
+Applications reading from DynamoDB tables can specify strong consistency reads.
+
+## DynamoDB Tables & Items
+DynamoDB stores data in tables. A table is a collection of data items.
+- Each table has an unlimited number of items
+- Each item can be up to 400KB in size.
+	We can store larger data in an S3 bucket, and store S3 pointers (URLs) in the DynamoDB table items yo get around this.
+- An item is a group of attributes.
+- An attribute is the fundamental data element in DynamoDB. Attributes are like columns in relational DBs.
+- Each attribute has an attribute name and a value or a set of values (key and value).
+The table is indexed by a **Primary Key** or a **Composite Key**.
+- The primary key gets specified at the table creation time.
+- The primary key is an attribute that exists in each item and has a ***unique*** value in each item.
+![[Pasted image 20221210030112.png]]
+
+## DynamoDB Capacity Units
+Billing on DynamoDB is done on RCUs & WCUs:
+##### Read Capacity Unit (RCU)
+- One RCU represents one Strongly Consistent read/Sec  for an item up to 4KB in size.
+- Or two Eventual Consistency reads/Sec  for an item up to 4KB in size.
+##### Write Capacity Units (WCU)
+- One WCU represents one write/sec for an item up to 1KB in size.
+
+If the read or write request rate exceeds the throughput settings for a table, DynamoDB will throttle them, & drop the request.
+*Note:* WCUs are more expensive than RCUs
+
+## DynamoDB Auto Scaling
+Uses application autoscaling to adjust the RCUs and/or WCUs for a DynamoDB table as demand increases or decreases.
+- It works with CloudWatch and application auto scaling to do the required.
+- Customers must configure a scaling policy and define a target utilization to scale the capacity units of the table out or in.
+- 
+
+## DynamoDB is a service on Console
+![[Pasted image 20221210041413.png]]
