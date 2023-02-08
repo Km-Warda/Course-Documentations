@@ -1,7 +1,3 @@
-- The pipeline will fail because of missing credentials
-	- Create an IAM user with S3 access permissions.
-	- Assign an access key to it and add it as a variable.
-	- ***NOTE:*** upon adding the variable it must be under the name of `AWS_ACCESS_KEY_ID` & you will see that it will be autocompleted, AWS CLI will look for the variable with the same name
 # Part 1: Basics & Concepts
 
 ## Cloud types:
