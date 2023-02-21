@@ -1097,8 +1097,8 @@ Perfect Forward Secrecy (PFS) helps prevent the decoding of captured encrypted d
 Supported ONLY for ALB.
 An Application Load Balancer supports specific content routing traffic to a specific target group based on:
 - The HTTP path header of the URL.
-	www.example.com/images
-	www.example.com/videos
+	``www.example.com/images``
+	``www.example.com/videos``
 - The HTTP hostname header of the URL.
 	offers.example.com
 	sales.example.com
