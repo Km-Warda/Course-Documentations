@@ -1100,8 +1100,8 @@ An Application Load Balancer supports specific content routing traffic to a spec
 	``www.example.com/images``
 	``www.example.com/videos``
 - The HTTP hostname header of the URL.
-	offers.example.com
-	sales.example.com
+	``offers.example.com``
+	``sales.example.com``
 - This is also possible for HTTPS traffic.
 ![Pasted image 20221207190102](https://user-images.githubusercontent.com/109697567/220480515-964acd6b-9953-4fbc-a84b-b57fb3ca3128.png)
 
