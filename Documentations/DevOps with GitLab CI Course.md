@@ -7,15 +7,15 @@
 - Then runs all the commands specified in the job.
 - Then report back the execution result to the Gitlab server. 
 - After the job is finished the docker container will be destroyed "Meaning that each time Gitlab runner starts the job, it creates a new Docker container".
-![[Pasted image 20230127035318.png]]
+![Pasted image 20230127035318](https://user-images.githubusercontent.com/109697567/220482787-eb50e3bb-9e25-4999-bbb9-14a1b483725e.png)
 These steps can be seen in the pipeline results (Blue & white):
-![[Pasted image 20230127040434.png]]
+![Pasted image 20230127040434](https://user-images.githubusercontent.com/109697567/220482807-e635bda9-c464-47c4-b05d-803258c2b8fd.png)
 ### Building a Pipeline
 Pipeline is a set of jobs that gets done in stages.
-![[Pasted image 20230119163003.png]]
+![Pasted image 20230119163003](https://user-images.githubusercontent.com/109697567/220482836-2513c643-b348-4102-8eb3-55a480b52e47.png)
 ### Yml Files
 Simply by using spaces & tabs, it's able to create nesting behavior in the yml files:
-![[Pasted image 20230127034641.png]]
+![Pasted image 20230127034641](https://user-images.githubusercontent.com/109697567/220482893-d65a2687-fa1c-42e8-bc73-c5fc3c10a06b.png)
 *Notice:* The image represents a one job, the job is "person"
 
 ### Create a file named as *.gitlab-ci.yml*
