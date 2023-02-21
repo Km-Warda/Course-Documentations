@@ -89,4 +89,31 @@ This means you can mount multiple containers to the same volume of they needed t
 
 ### Docker volume locations :
 ![Docker Volume Locations](https://user-images.githubusercontent.com/109697567/205090132-519692cf-474f-4fb0-8d98-1cf47a8f534a.png)
-*note:* On MAC OS specifically, Docker creates a Linux VM and stores all Docker data there. so if you executed *ls /var/lib/docker*, a "no such file or directory" message will appear. You can access the file through accessing the VM terminal by "screen" command. & the data will be present there. To exit the screen press *ctrl+A+K* {For MAC OS}.
+*note:* On MAC OS specifically, Docker creates a Linux VM and stores all Docker data there. so if you executed *ls /var/lib/docker*, a "no such file or directory" message will appear. You can access the file through accessing the VM terminal by "screen" command. & the data will be present there. To exit the screen press `ctrl+A+K` {For MAC OS}.
+
+# Building Your Own Docker Image
+You can build a docker image from a docker file, docker files must be names `Dockerfile` & you will see it has the docker icon on a code executer.
+
+Docker files have a specific syntax, here we have:
+- `FROM` for setting the image desired to be used.
+- `ENV` for setting environmental variables.
+- `RUN` for running Linux commands on the container not locally.
+- `COPY` for copying locally.
+- `CMD` for entry point commands.
+![[Pasted image 20230210183952.png]]
+*Note:* Whenever you adjust a Docker file you have to rebuild its Docker image.
+
+Now we can use the command `build` :
+`docker build -t app-name:v.1 .`
+In the command before we set a name for the docker image "app-name", & a tag for it "v.1", and we gave the location of the docker file to be used for this docker image to be created, in this case we used a "." because it is in the same directory, but if the docker file is somewhere else the path is given instead.
+
+# Deleting a docker image
+For deleting a Docker image you have to delete the container first `docker rm`
+then remove the docker image `docker rmi`
+
+# Docker Repositories
+There are Public Docker repositories like "Docker Hub" where everyone can download images there, & there are private repositories, basically for companies private docker images.
+*ex:* Gitlab container repository
+- In order to push/pull an image to a private docker repository you must have the credentials required.
+- The repository location is included in the image name
+![Pasted image 20230214193709](https://user-images.githubusercontent.com/109697567/220483930-b36d2ba4-1039-4836-b185-19d541f7f09c.png)
