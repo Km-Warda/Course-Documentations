@@ -41,7 +41,7 @@ Main job:
 
 ### Gitlab Runners
 By default, Gitlab will have the option to use online shared runners to pick up the jobs, this can be turned off & set to a specific runner.
-![[Pasted image 20230208180815.png]]
+![Pasted image 20230208180815](https://user-images.githubusercontent.com/109697567/220482966-50842170-0048-4f02-8a72-0d82ab1c7d6a.png)
 
 - To use a runner, it must have Gitlab Runner installed on it.
 	[Install GitLab Runner | GitLab](https://docs.gitlab.com/runner/install/)
@@ -52,7 +52,7 @@ sudo gitlab-runner register
 - Register the runner with this URL:  
 	`https://gitlab.com/`       
 - Enter the registration token of the project
-![[Pasted image 20230208181357.png]]
+![Pasted image 20230208181357](https://user-images.githubusercontent.com/109697567/220482999-5c453489-d797-45ef-80ab-d3b1e6ea9ba9.png)
 - Important note: Create a tag for the Runner as it will be needed for picking up a job.
 
 ### Assigning a job to a Gitlab Runner "tags"
@@ -72,14 +72,14 @@ Main job:
 
 ### Pipeline Status
 If there is any conflicts making the pipeline stuck, it can be indicated as a cross sign, in this case it's working:
-![[Pasted image 20230127032711.png]]
+![Pasted image 20230127032711](https://user-images.githubusercontent.com/109697567/220483040-bfff6677-f42a-4753-b387-ab1a59ba2547.png)
 
 ### Pipeline Stages:
 When you put multiple Jobs in one file, they will run simultaneously without a specific order.
 - Use the job "stages" to specify stages & order of the jobs.
 - Specify the stage in each job.
 This way job2 won't start until job1 is finished:
-![[Pasted image 20230127045603.png]]
+![Pasted image 20230127045603](https://user-images.githubusercontent.com/109697567/220483053-74244bcb-5214-48fd-9122-21e5d2851abf.png)
 **However you'll still see here that job2 is still failing.**
 	This is because job1 destroys the container after the job is executed as discussed before, & job2 creates a new container, so the test command has false response.
 
@@ -106,17 +106,17 @@ Pipelines uses exit codes to indicate if the pipeline was executed successfully 
 - "exit code 0" indicates that the pipeline was executed successfully.
 - Any other number indicates an error.
 - the numbers can go from 0 to 255.
-![[Pasted image 20230127050827.png]]
+![Pasted image 20230127050827](https://user-images.githubusercontent.com/109697567/220483077-025dd48a-d73c-4d9f-a1e5-09d76dd50295.png)
 
 ### Job Artifacts
 In the example mentioned, each job had its own different container, which defeats the purpose of using stages.
 - Job Artifacts are items that are set to be kept after the job is done & doesn't get lost when the container gets destroyed
 ![[Pasted image 20230127051550.png]]
 This can be seen from the pipeline logs for both stages as well either in the logs or as files to browse through
-![[Pasted image 20230127052000.png]]
-![[Pasted image 20230127053411.png]]
+![Pasted image 20230127052000](https://user-images.githubusercontent.com/109697567/220483094-88bbd1e3-a155-443a-9d30-6df335699b48.png)
+![Pasted image 20230127053411](https://user-images.githubusercontent.com/109697567/220483119-94dad361-38a4-4393-a41c-cdd5beeef3db.png)
 - The key word `path` made the artifacts browsable, there are other keywords, for example `reports` can be used to show us the test reports in Gitlab pipeline test tab
-![[Pasted image 20230214192408.png]]
+![Pasted image 20230214192408](https://user-images.githubusercontent.com/109697567/220483147-63f9d031-1fba-4555-bbe5-ca7ee57252be.png)
 
 ### Setting Variables
 It's able to set a variable either specifically for each job, or globally for all jobs.
@@ -150,7 +150,7 @@ You can add variables in the CI/CD tab in the project settings instead of inputt
 - "Protect Variables" option makes the variable available only for the protected branches, as the main branch, so disable it unless needed.
 - "Mask Variables" option masks the variable in printed pages for security.
 - Here I created a variable for an S3 bucket on AWS:
-![[Pasted image 20230208184444.png]]
+![Pasted image 20230208184444](https://user-images.githubusercontent.com/109697567/220483180-fc64cabb-e77e-4e6d-ad57-4b413fa14ef7.png)
 
 ### Predefined Variables
 Gitlab comes with some predefined variables that can be used in the project. Can be found at  `https://docs.gitlab.com/ee/ci/variables/predefined_variables.html`
@@ -167,7 +167,7 @@ Placing a dot before the job name will disable it in the next pipeline run.
 
 ### Job Timeouts
 If a job cannot end/succeed or fail, it doesn't run forever, but it has a specific max timeout to be terminated.
-![[Pasted image 20230206224817.png]]
+![Pasted image 20230206224817](https://user-images.githubusercontent.com/109697567/220483203-a34b48ad-d64e-4aa4-bae8-42de5b48dfbf.png)
 
 ### Testing Stage
 Instead of the test command, serve command can be more useful as it starts a server for the specified path not only checks it.
@@ -216,10 +216,10 @@ test job:
 
 ### Gitlab Repositories
 Gitlab has 3 types of repositories:
-![[Pasted image 20230214193815.png]]
+![Pasted image 20230214193815](https://user-images.githubusercontent.com/109697567/220483239-9edf12ff-8a0f-4496-bd58-648bc2ca1e58.png)
 - In order to push/pull an image to a private docker repository you must have the credentials required.
 - The repository location is included in the image name
-![[Pasted image 20230214193904.png]]
+![Pasted image 20230214193904](https://user-images.githubusercontent.com/109697567/220483255-eab5e0ca-d950-4f77-a687-fcfd11c87b02.png)
 
 ### Linter
 "lint" is a command used to checks C and C++ language programs for potential problems., so it's used mostly as a .pre stage.
@@ -255,7 +255,7 @@ After the testing's succeed, the deployment stage starts, and will be deployed t
 
 ### AWS CLI
 Make sure to add the "AWS CLI" docker image to the stage, & it can be found & copied from the docker hub "amazon/aws-cli".
-![[Pasted image 20230208172419.png]]
+![Pasted image 20230208172419](https://user-images.githubusercontent.com/109697567/220483275-61fefea1-d157-454a-b4ca-8a24fb4f35bd.png)
 Notice that the image has an entry point, an application that runs with the image. This conflicts with how Gitlab run images, so in order to overwrite this, use the property **"entrypoint"**
 ```
 deploy to s3:
@@ -284,13 +284,13 @@ deploy to s3:
 	- Create an IAM user with S3 access permissions.
 	- Assign an access key to it and add it as a variable.
 	- ***NOTE:*** upon adding the variable it must be under the name of `AWS_ACCESS_KEY_ID` & you will see that it will be autocompleted, AWS CLI will look for the variable with the same name
-	![[Pasted image 20230208191528.png]]
+	![Pasted image 20230208191528](https://user-images.githubusercontent.com/109697567/220483301-4f831307-6895-4c95-9b41-c68164f21aad.png)
 	- Do the same for `AWS_SECRET_ACCESS_KEY`
 	- Use the variable `AWS_DEFAULT_REGION` to avoid specifying a region "Because S3 buckets are region specific services".
-	![[Pasted image 20230208192357.png]]
+	![Pasted image 20230208192357](https://user-images.githubusercontent.com/109697567/220483384-704568e1-da32-4f71-a569-05aea95c5011.png)
 - Now retry running the pipeline with the same job, it will succeed, this is because AWS CLI automatically reaches for the credentials given.
 - You can find the text.txt file now in the S3 bucket.
-![[Pasted image 20230208193208.png]]
+![Pasted image 20230208193208](https://user-images.githubusercontent.com/109697567/220483407-362942b2-e1a8-4c3f-afa5-b451eb75e86f.png)
 
 ### Branches & Controlling When Jobs Run "Job Rules"
 If we committed on a different branch from the main branch, we can then merge the branch into the main if the pipeline succeeded.
@@ -334,7 +334,7 @@ It's main purpose is to prevent flows into the deployment stage if any adjustmen
 In Continuous Deployment, the staging triggers the deployment stage on success, while on Continuous Delivery, the promotion from staging to deployment is done manually.
 
 - In order to do this, use a condition `when: manual` inside the deployment job, & you will see that it has to be started manually with a button.
-![[Pasted image 20230209194149.png]]
+![Pasted image 20230209194149](https://user-images.githubusercontent.com/109697567/220483442-07daeda8-9b13-48cb-b957-5e97a1b5fd33.png)
 
 ### Environments
 Introducing staging subjected us to using many variables as we now have two URLs, two S3 buckets, etc.
@@ -345,7 +345,7 @@ Gitlab Environments basically describe where this code is deployed, so the stagi
 - You can use the S3 bucket web hosting link as the External link.
 
 Now we can see that we can define the same variable for the same value, each with a different environment scope
-![[Pasted image 20230209190141.png]]
+![Pasted image 20230209190141](https://user-images.githubusercontent.com/109697567/220483456-06bbea26-6c29-452d-b948-9e538353c6cf.png)
 - You can find in the global variables page a variable for current environment URL `$CI_ENVIRONMENT_URL`
 - Use the keyword `environment:` in the job to specify its environment.
 ```
