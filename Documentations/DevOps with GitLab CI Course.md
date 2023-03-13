@@ -111,7 +111,7 @@ Pipelines uses exit codes to indicate if the pipeline was executed successfully 
 ### Job Artifacts
 In the example mentioned, each job had its own different container, which defeats the purpose of using stages.
 - Job Artifacts are items that are set to be kept after the job is done & doesn't get lost when the container gets destroyed
-![[Pasted image 20230127051550.png]]
+![Pasted image 20230127051550](https://user-images.githubusercontent.com/109697567/224810969-ab959a70-d6b2-4c32-a876-3a364d3fda40.png)
 This can be seen from the pipeline logs for both stages as well either in the logs or as files to browse through
 ![Pasted image 20230127052000](https://user-images.githubusercontent.com/109697567/220483094-88bbd1e3-a155-443a-9d30-6df335699b48.png)
 ![Pasted image 20230127053411](https://user-images.githubusercontent.com/109697567/220483119-94dad361-38a4-4393-a41c-cdd5beeef3db.png)
@@ -315,7 +315,7 @@ deploy to s3:
 ### Deploy to EC2 instance
 In order to deploy to an EC2 Instance you have to SSH to it first, make sure that the instance security group allows SSH.
 *Note:* When trying to SSH to an instance for the first time you will have an interactive question, which will interrupt the automation process.
-![[Pasted image 20230306200403.png]]
+![Pasted image 20230306200403](https://user-images.githubusercontent.com/109697567/224811200-4a54846a-c159-44ed-861a-d595bb3dd9fe.png)
 - In order to avoid this, use the option:
 `-o StrictHostKeyChecking=no`
 - You can use a variable for the instance IP address for a cleaner code.
@@ -478,7 +478,7 @@ push_image:
 
 ##### IMPORTANT FILE CONFIGURATION
 Sometimes building image on the runner instance results in the following error
-![[Pasted image 20230306204120.png]]
+![Pasted image 20230306204120](https://user-images.githubusercontent.com/109697567/224811375-998dba4d-6dc7-42af-9cc3-9ce0ce18609f.png)
 - To fix this go to the instance interface & edit the file:
 `/etc/gitlab-runner/config.toml`
 - Make sure the following values are edited "use command `sudo vim `"
@@ -515,7 +515,7 @@ deploy_to_ec2:
 
 ### Using Environments
 We can access the project with the EC2 public IP or with its public DNS, however this can be done in a better way if we set environments.
-![[Pasted image 20230306230116.png]]
+![Pasted image 20230306230116](https://user-images.githubusercontent.com/109697567/224811493-c4ac2b75-c006-4250-b246-26bdb343b699.png)
 
 # Docker compose
 If we changed the version from 1.0 to another version, or tried to build another container, we will get an error due to the existing container. That's why we use docker compose files
@@ -599,10 +599,9 @@ sast:
 include:
 	template: Jobs/SAST.gitlab-ci.yml
 ```
-![[Pasted image 20230312011025.png]]
+![Pasted image 20230312011025](https://user-images.githubusercontent.com/109697567/224811579-8917c2ce-4908-43df-bcd5-19ccfa9292ed.png)
 
 
 ### Pipeline Templates
 There are also pipeline templates for the whole pipeline, this can be found in the pipeline tab of a project with no pipeline.
-![[Pasted image 20230312011406.png]]
-
+![Pasted image 20230312011406](https://user-images.githubusercontent.com/109697567/224811613-fafe2df1-cc34-45d4-a1ac-d91a5f23209d.png)
