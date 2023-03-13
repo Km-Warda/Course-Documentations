@@ -118,6 +118,26 @@ This can be seen from the pipeline logs for both stages as well either in the lo
 - The key word `path` made the artifacts browsable, there are other keywords, for example `reports` can be used to show us the test reports in Gitlab pipeline test tab
 ![Pasted image 20230214192408](https://user-images.githubusercontent.com/109697567/220483147-63f9d031-1fba-4555-bbe5-ca7ee57252be.png)
 
+- Artifacts are downloaded for all stages by default.
+- If the two jobs are in the same stage, the other job will not have the artifacts, use `dependencies: - job1` for artifacts downloading or `needs: - job1` for artifacts downloading & pending start of the second till success of the first.
+- To prevent a job from downloading the artifacts, use `dependencies: []`
+
+### .env Files "Environmental Artifacts"
+Gitlab provides a feature of storing data "could be variables" inside a file of extension .env, this will provide the variables inside it to all jobs "unless an empty array dependency is set".
+- Suppose we want to apply dynamic versioning from the version indicated in the package.json file we have in our project, & the pipeline ID. "using jq command"
+```
+	- export PACKAGE_JSON_VERSION=$(cat FrontEnd/package.json | jq -r .version)
+	- export VERSION=$PACKAGE_JSON_VERSION.$CI_PIPELINE_IID
+```
+- Now to store in the .env file
+```- echo "VERSION=$VERSION" >> environmental-variables.env ```
+- Then in the artifacts store it as "dotenv report" :
+``` 
+artifacts:
+	reports:
+		dotenv: environmental-variables.env
+```
+
 ### Setting Variables
 It's able to set a variable either specifically for each job, or globally for all jobs.
 - For setting a variable name globally:
@@ -248,7 +268,7 @@ The code can get bigger inside the .yml file & may result in less readable scrip
 - You can see all the merge requests to be created, merged or cancelled directly from the `"Merge Requests"`.
 - You can view all the branches from `"Repository > Branches"`.
 
-# Part2: Pipelines deployment to AWS 
+# Part2: Pipelines Deployment to AWS 
 
 ## Deploy stage
 After the testing's succeed, the deployment stage starts, and will be deployed to an S3 Bucket.
@@ -291,6 +311,21 @@ deploy to s3:
 - Now retry running the pipeline with the same job, it will succeed, this is because AWS CLI automatically reaches for the credentials given.
 - You can find the text.txt file now in the S3 bucket.
 ![Pasted image 20230208193208](https://user-images.githubusercontent.com/109697567/220483407-362942b2-e1a8-4c3f-afa5-b451eb75e86f.png)
+
+### Deploy to EC2 instance
+In order to deploy to an EC2 Instance you have to SSH to it first, make sure that the instance security group allows SSH.
+*Note:* When trying to SSH to an instance for the first time you will have an interactive question, which will interrupt the automation process.
+![[Pasted image 20230306200403.png]]
+- In order to avoid this, use the option:
+`-o StrictHostKeyChecking=no`
+- You can use a variable for the instance IP address for a cleaner code.
+- Remember that you don't have the SSH key on your Gitlab project "& shouldn't upload it", so make sure to store its value as a variable.
+so the deploy script should be something like this:
+```
+	script:
+		- ssh -o StrictHostKeyChecking=no -i $EC2Key ubuntu@ec2-18-130-232-114.eu-west-2.compute.amazonaws.com
+```
+*Note:* To get the value of the the SSH key, use the command `cat` locally on your machine & copy the value
 
 ### Branches & Controlling When Jobs Run "Job Rules"
 If we committed on a different branch from the main branch, we can then merge the branch into the main if the pipeline succeeded.
@@ -361,6 +396,7 @@ As seen before, we reused identical configurations for both staging & deploying 
 
 - In the following code we set a disabled recall job syncing the folder `build` to the S3 bucket assigned to the variable, & then also testing in the same job. Notice that it doesn't have neither a stage nor an environment.
 - We recalled it at the staging & deployment jobs, each with its own stage & environment.
+- You can pass important variables to it by setting them as empty.
 ```
 .recall:
 	image:
@@ -370,18 +406,203 @@ As seen before, we reused identical configurations for both staging & deploying 
 		- if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
 	script:
 		- aws s3 sync build s3://$AWS_S3_BUCKET --delete
-		- curl $CI_ENVIRONMENT_URL| grep "React App"
+		- curl $CI_ENVIRONMENT_URL| grep "$GREP"
+	variables:
+		GREP: ""
 
 staging:
 	stage: staging
 	environment: staging
 	extends: .recall
+	variables:
+		$GREP: React App
 
 deploy:
 	stage: deploy
 	environment: deploy
 	extends: .recall
+	variables:
+		$GREP: React App
 ```
 *Notice:* when recalling the job with the keyword extends, we used a dot before the disabled job.
 
+# Development Environment & Docker Files on Gitlab
+As mentioned before Gitlab provides docker repository for each project, having the same privacy as the project "private/public"
+
+### Building a docker image
+**Requires:**
+- An image supporting docker commands
+	`image: docker:dind`
+- Authentication
+	`docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY`
+- Specifying the Project Repository
+	`docker build -t $CI_REGISTRY_IMAGE:1.0 /docker_file_directory `
+- Adding user to the docker group on the runner command interface.
+	`sudo usermod -aG docker ubuntu `
+
+So the build stage should be something like this:
+```
+build_image:
+	image: docker:dind
+	stage: build
+	before_script:
+		- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+	script:
+		- docker build -t $CI_REGISTRY_IMAGE:1.0 /docker_file_directory
+```
+
+### Pushing a docker image
+**Requires:**
+- An image supporting docker commands
+	`image: docker:dind`
+- build image job
+	`needs: - build_image`
+- Authentication
+	`docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY`
+- Specifying the Project Repository
+	`docker build -t $CI_REGISTRY_IMAGE:1.0 /docker_file_directory `
+- Adding user to the docker group on the runner command interface. **DONE**
+
+So the push stage should be something like this:
+```
+push_image:
+	image: docker:dind
+	stage: build
+	needs:
+		- build_image
+	before_script:
+		- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+	script:
+		- docker push $CI_REGISTRY_IMAGE:1.0
+```
+
+##### IMPORTANT FILE CONFIGURATION
+Sometimes building image on the runner instance results in the following error
+![[Pasted image 20230306204120.png]]
+- To fix this go to the instance interface & edit the file:
+`/etc/gitlab-runner/config.toml`
+- Make sure the following values are edited "use command `sudo vim `"
+![[Screenshot 2023-03-06 204619.png]]
+
+### Deploy a docker image to EC2
+**Requires:**
+- An image supporting docker commands
+	`image: docker:dind`
+- Permission for the SSH Key "Store it as a file type variable"
+	`chmod 400 $EC2_Key`
+- SSH Authentication to EC2 instance
+	`ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip`
+- Running the docker image on the instance
+	For this you have to use the commands as parameters in the SSH command "Suppose Docker File used port 3000":
+	```
+	ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip " 
+		docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+		docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.0"
+	```
+
+So the push stage should be something like this:
+```
+deploy_to_ec2:
+	image: docker:dind
+	stage: deploy
+	before_script:
+		- chmod $EC2_Key
+	script:
+		- ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip " 
+			docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+			docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.0"
+```
+
+### Using Environments
+We can access the project with the EC2 public IP or with its public DNS, however this can be done in a better way if we set environments.
+![[Pasted image 20230306230116.png]]
+
+# Docker compose
+If we changed the version from 1.0 to another version, or tried to build another container, we will get an error due to the existing container. That's why we use docker compose files
+
+The following is required:
+- Create a `"docker-compose.yaml"` file.
+- Create the containers desired to run.
+- Use docker compose to disable all containers in the .yaml file.
+	` docker-compose -f docker-compose.yaml down`
+- Use docker compose to start all containers in the .yaml file.
+	` docker-compose -f docker-compose.yaml up -d`
+- Copy the docker-compose.yaml file to the EC2 instance, as it is on our Gitlab repository but not on the instance.
+	`scp -o StrictHostKeyChecking=no -i $EC2_Key ./docker-compose.yaml ubuntu@$public_ip:/home/ubuntu`
+- Make sure that docker-compose is installed on the instance, it's a different package from docker.
+
+So the deployment stage with a docker compose file will be something like this:
+```
+deploy_to_ec2:
+	image: docker:dind
+	stage: deploy
+	before_script:
+		- chmod $EC2_Key
+	script:
+		- scp -o StrictHostKeyChecking=no -i $EC2_Key ./docker-compose.yaml ubuntu@$public_ip:/home/ubuntu
+		- ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip " 
+			docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+			docker-compose -f docker-compose.yaml down &&
+			docker-compose -f docker-compose.yaml up -d"
+```
+
+& in the docker-compose.yaml:
+```
+version: 3.6
+services:
+  app:
+  image: registry.gitlab.com/kmw4rda/project-practice:1.0
+  ports:
+    - 80:3000
+```
+The previous docker-compose file have the same job as running the command `docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.2`
+
+*Note:* Docker-compose will by default look for the file named docker-compose.yml or docker-compose.yaml, so you can remove the file specification from the docker-compose commands above to have less code.
+
+# Optimization
+
+### Caching
+Gitlab caching allows us to save time by downloading dependencies we need in different jobs on the runner, a suitable case will be if we installed a dependency "as node image" on a job & the  other jobs need it as well, or to use it from previous pipelines to save time.
+- Caching vs Artifacts:
+	Artifacts download the dependencies on the Gitlab server & is distinct for each pipeline.
+	While caching downloads dependencies on the Gitlab Runner to be used for all many pipelines.
+*Notice:* Caching might be inefficient in case of many runners, in this case a different area can be used for caching "like an S3 bucket".
+
+- Keys are set to identify the cache, jobs with the same cache key will use the cache with the key "Here we used the key to be branch specific & `$CI_COMMIT_REF_NAME` is a predefined variable for current branch".
+- Paths are set to identify the files desired to be cached "you can use it as an array".
+- We can set policy for caching for each job "as pull to only download cache & not update it". Default policy is pull-push "no need of specification".
+```
+	cache:
+		key: "$CI_COMMIT_REF_NAME"
+		paths:
+			- ForntEnd/node_modules
+		policy: pull-push
+```
+
+
+#### Docker Runners Caching
+If we are executing a job on a docker runner, we know that the container gets destroyed after the job succeeds, so the caching stored on the container is lost.
+
+- We can set a Docker volume on our host "runner" to persist the caching.
+- Edit the file `/etc/gitlab-runner/config.toml` & add a cache path:
+![[Screenshot 2023-03-12 010219.png]]
+
+# Gitlab Templates
+Gitlab provides templates for jobs that are ready to be used in our pipelines, these templates can be found at the repository [lib/gitlab/ci/templates · master · GitLab.org / GitLab FOSS · GitLab](https://gitlab.com/gitlab-org/gitlab-foss/tree/master/lib/gitlab/ci/templates)
+
+For example we want to use the SAST Testing job template, to do this we use it as a job with its assigned name, & use the key word `include` to reference the projects or templates required to be included, for templates we use the parameter `template:`
+```
+sast:
+	stage: test
+	tags: - $MY_RUNNER
+
+include:
+	template: Jobs/SAST.gitlab-ci.yml
+```
+![[Pasted image 20230312011025.png]]
+
+
+### Pipeline Templates
+There are also pipeline templates for the whole pipeline, this can be found in the pipeline tab of a project with no pipeline.
+![[Pasted image 20230312011406.png]]
 
