@@ -580,8 +580,7 @@ This is a docker-compose variable and has to be defined as it is:  ***COMPOSE_PR
 If we have 3 different deployment environments, we want each of them to run on a different port on the same server for example, this needs 3 different docker-compose files. This can be done with 1 docker-compose configuration per project.
 
 - We can set the values in the docker-compose file as variables inside curled brackets to be passed in the deployment job.
-![[Pasted image 20230313235943.png]]
-
+![Pasted image 20230313235943](https://user-images.githubusercontent.com/109697567/224875452-fc2a6538-1340-4210-8afe-6e179e0a5e7d.png)
 
 # Optimization
 
@@ -609,7 +608,7 @@ If we are executing a job on a docker runner, we know that the container gets de
 
 - We can set a Docker volume on our host "runner" to persist the caching.
 - Edit the file `/etc/gitlab-runner/config.toml` & add a cache path:
-![[Screenshot 2023-03-12 010219.png]]
+![Screenshot 2023-03-12 010219](https://user-images.githubusercontent.com/109697567/224875527-346cb312-cbed-43c5-8b21-333d98779b8e.png)
 
 # Gitlab Templates
 ### Gitlab Predefined Templates
@@ -691,10 +690,10 @@ However doing this creates the containers in 3 different networks, & the service
 Docker-compose network naming uses the following scheme: the name of the project name "we used `COMPOSE_PROJECT_NAME` to set it", followed by default. so we have "frontend.default & backend.default" as the network name for example, two different networks.
 
 - To fix this we can create a network in the docker-compose file:
-![[Pasted image 20230314013902.png]]
+![Pasted image 20230314013902](https://user-images.githubusercontent.com/109697567/224875590-f4dbe4dd-85fb-43fc-a2fb-73b436dc0aaa.png)
 
 - We can use a preexisting network as well using `external`, this removes the need of `bridges` of course.
-![[Pasted image 20230314003018.png]]
+![Pasted image 20230314003018](https://user-images.githubusercontent.com/109697567/224875621-2bf1e2fa-9a7c-4951-b6ba-6feae338e099.png)
 *Note:* The double pipe "|| true" in the command is important because the command will fail in the second run due to the network being already created, so we set it to ignore on failure.
 
 ## Polyrepo Applications
@@ -703,7 +702,7 @@ Docker-compose network naming uses the following scheme: the name of the project
 Each Microservice has its own repository, and these repositories are set in one group.
 - Creating a group can be done via the group tab on Gitlab home screen.
 
-![[Pasted image 20230314015739.png]]
+![Pasted image 20230314015739](https://user-images.githubusercontent.com/109697567/224875654-412bb82b-f6de-4a7e-bf28-2e58440ae510.png)
 
 ### Group Runners & Shared configurations
 We can assign Gitlab runners for the group to be shared across all the projects. This is applicable also for variables, registries & most of the configurations.
