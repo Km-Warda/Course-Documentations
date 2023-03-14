@@ -559,6 +559,30 @@ The previous docker-compose file have the same job as running the command `docke
 
 *Note:* Docker-compose will by default look for the file named docker-compose.yml or docker-compose.yaml, so you can remove the file specification from the docker-compose commands above to have less code.
 
+### Docker-Compose Name
+If we have multiple deployment environment, or multiple microservice services deployed on the same server, using the `docker-compose down` as before will destroy the docker containers on the server and only the final stage will be deployed. This is because all the container will start having the same default name.
+
+To solve this use the attribute `COMPOSE_PROJECT_NAME` :
+```
+	script:
+		- scp -o StrictHostKeyChecking=no -i $EC2_Key ./docker-compose.yaml ubuntu@$public_ip:/home/ubuntu
+		- ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip " 
+			docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+			
+			expoort COMPOSE_PROJECT_NAME:$ENVIRONMENT_NAME
+			
+			docker-compose -f docker-compose.yaml down &&
+			docker-compose -f docker-compose.yaml up -d"
+```
+This is a docker-compose variable and has to be defined as it is:  ***COMPOSE_PROJECT_NAME***
+
+### Using Multiple Docker-Compose Files
+If we have 3 different deployment environments, we want each of them to run on a different port on the same server for example, this needs 3 different docker-compose files. This can be done with 1 docker-compose configuration per project.
+
+- We can set the values in the docker-compose file as variables inside curled brackets to be passed in the deployment job.
+![[Pasted image 20230313235943.png]]
+
+
 # Optimization
 
 ### Caching
@@ -588,6 +612,7 @@ If we are executing a job on a docker runner, we know that the container gets de
 ![[Screenshot 2023-03-12 010219.png]]
 
 # Gitlab Templates
+### Gitlab Predefined Templates
 Gitlab provides templates for jobs that are ready to be used in our pipelines, these templates can be found at the repository [lib/gitlab/ci/templates · master · GitLab.org / GitLab FOSS · GitLab](https://gitlab.com/gitlab-org/gitlab-foss/tree/master/lib/gitlab/ci/templates)
 
 For example we want to use the SAST Testing job template, to do this we use it as a job with its assigned name, & use the key word `include` to reference the projects or templates required to be included, for templates we use the parameter `template:`
@@ -605,3 +630,87 @@ include:
 ### Pipeline Templates
 There are also pipeline templates for the whole pipeline, this can be found in the pipeline tab of a project with no pipeline.
 ![Pasted image 20230312011406](https://user-images.githubusercontent.com/109697567/224811613-fafe2df1-cc34-45d4-a1ac-d91a5f23209d.png)
+
+### Custom Templates
+Gitlab allows creation of custom templates in different repositories to be called, this can be useful in sharing pipelines configurations among different repositories.
+
+- When creating a template, you don't have to name it a specific name as in case of the main pipeline file. suppose we created a template of name `.build-template.yaml`.
+- Remember to make it generic with variables that can be passed from other repositories.
+- This can also be used for organizing a huge pipeline in a repository
+- Use `include` to call a template to a job
+For a repository containing the template:
+```
+include: 
+	- local: './build-template.yaml'
+```
+For different repository in the same group: "ref is for branch"
+```
+include:
+	project: 'group-name/my-templates'
+	ref: main
+	file:
+		- build-template.yaml
+		- deploy-taemplate.yaml
+```
+For a totally different repository:
+```
+include:
+	- remote: $THE_FILE_PUBLIC_URL
+```
+- After calling the template we start the job inside it by setting a job with the same name, so if the job in the template has the name "build:" then we set an empty job in the pipeline yaml file with the name "build:"
+- IMPORTANT: Adding a "script:" or "before_script:" keyword will overwrite the job, not add to it
+
+# Microservices pipelines
+In Gitlab, we have two types of repositories dealing with microservice applications:
+- Monorepo applications:
+	Having all the parts of the project in one repository, usually with a folder for each microservice.
+- Polyrepo applications:
+	Having a specific repository for each microservice.
+
+## Monorepo Applications
+
+### Starting specific jobs
+Suppose we have 3 Microservices, we want to run a stage in the pipeline only if the corresponding microservice was edited or updated, instead of running the whole pipeline on each commit.
+
+We can use the attribute `only` that we used for running the pipeline only in the main branch, with the keyword `changes` for checking if changes was done to the path provided.
+```
+products:
+	stage: build
+	only:
+		chhanges:
+			- "products/**/*"
+```
+Remember to use `extends` if there are multiple microservice with repetitive configuration.
+
+*Note:* you will notice that if the pipeline/job failed, for example due to an invalid yaml syntax, the pipeline won't restart the failed jobs automatically after fixing the error, because there are no change detected in the path provided, even though the automatically triggered job failed. So you must start a new pipeline manually.
+
+### Monorepo Deployment
+We know we can use a single docker-compose file in the project to deploy to different environments, this concept can be used to deploy multiple services separately, which we want here. 
+However doing this creates the containers in 3 different networks, & the services will be deployed successfully but won't be able to communicate with each other by default "there are tools that can be used to overcome this".
+
+Docker-compose network naming uses the following scheme: the name of the project name "we used `COMPOSE_PROJECT_NAME` to set it", followed by default. so we have "frontend.default & backend.default" as the network name for example, two different networks.
+
+- To fix this we can create a network in the docker-compose file:
+![[Pasted image 20230314013902.png]]
+
+- We can use a preexisting network as well using `external`, this removes the need of `bridges` of course.
+![[Pasted image 20230314003018.png]]
+*Note:* The double pipe "|| true" in the command is important because the command will fail in the second run due to the network being already created, so we set it to ignore on failure.
+
+## Polyrepo Applications
+
+### Gitlab Groups
+Each Microservice has its own repository, and these repositories are set in one group.
+- Creating a group can be done via the group tab on Gitlab home screen.
+
+![[Pasted image 20230314015739.png]]
+
+### Group Runners & Shared configurations
+We can assign Gitlab runners for the group to be shared across all the projects. This is applicable also for variables, registries & most of the configurations.
+
+### Job Templates & Sharing Pipelines
+In a Polyrepo Project, each service has its own pipeline, & we may find repetitive configurations as in case of Monorepo projects. However we can't use `extends` in this case.
+
+- We can use custom templates.
+- Set a template either in one repository of the services repositories, or a new repository for templates.
+- Seek Custom Templates section.
