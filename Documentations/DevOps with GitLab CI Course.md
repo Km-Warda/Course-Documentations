@@ -90,6 +90,7 @@ Gitlab already has built in Predefined Stages, coming in order as:
 - test
 - deploy
 - .post
+
 These stages doesn't need defining in the .yml file.
 
 ### Parallel Staging
