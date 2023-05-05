@@ -339,7 +339,7 @@ If we committed on a different branch from the main branch, we can then merge th
 ```
 *Notice:* `CI_COMMIT_REF_NAME`: A predefined variable for the branch or tag name for which project is built, `CI_DEFAULT_BRANCH`: A predefined variable for the name of the project’s default branch.
 
-- Another better +way of doing this is using the keywords `only` & `except` 
+- Another better way of doing this is using the keywords `only` & `except` 
 	* `only` defines when a job runs.
 	- `except` defines when a job doesn't run.
 ```
