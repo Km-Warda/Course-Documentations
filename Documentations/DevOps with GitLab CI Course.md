@@ -483,7 +483,7 @@ Sometimes building image on the runner instance results in the following error
 - To fix this go to the instance interface & edit the file:
 `/etc/gitlab-runner/config.toml`
 - Make sure the following values are edited "use command `sudo vim `"
-![[Screenshot 2023-03-06 204619.png]]
+![Screenshot 2023-03-06 204619](https://user-images.githubusercontent.com/109697567/236550285-9ecf6494-ea15-4de2-88cf-c54d80d345b3.png)
 
 ### Deploy a docker image to EC2
 **Requires:**
