@@ -554,7 +554,7 @@ services:
   app:
   image: registry.gitlab.com/kmw4rda/project-practice:1.0
   ports:
-    - 80:3000
+    - 3000:80
 ```
 The previous docker-compose file have the same job as running the command `docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.2`
 
