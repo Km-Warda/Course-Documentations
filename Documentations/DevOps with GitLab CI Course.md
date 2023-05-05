@@ -501,7 +501,7 @@ Sometimes building image on the runner instance results in the following error
 		docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.0"
 	```
 
-So the push stage should be something like this:
+So the deploy stage should be something like this:
 ```
 deploy_to_ec2:
 	image: docker:dind
