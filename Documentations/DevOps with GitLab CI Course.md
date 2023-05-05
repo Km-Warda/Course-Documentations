@@ -494,11 +494,11 @@ Sometimes building image on the runner instance results in the following error
 - SSH Authentication to EC2 instance
 	`ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip`
 - Running the docker image on the instance
-	For this you have to use the commands as parameters in the SSH command "Suppose Docker File used port 3000":
+	For this you have to use the commands as parameters in the SSH command "Suppose Docker File used port 80 & the deployment is on port 3000":
 	```
 	ssh -o StrictHostKeyChecking=no -i $EC2_Key ubuntu@$public_ip " 
 		docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
-		docker run -d -p 3000:3000 $CI_REGISTRY_IMAGE:1.0"
+		docker run -d -p 3000:80 $CI_REGISTRY_IMAGE:1.0"
 	```
 
 So the deploy stage should be something like this:
