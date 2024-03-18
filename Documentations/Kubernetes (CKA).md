@@ -50,7 +50,7 @@ spec:
 #### Replication Controller with YAML files
 Notice that it has two metadata blocks, one for the replication controller, & the other for the pod that will be managed. Replication Controller uses apiVersion V1.
 - You can use `kubectl get replicationcontroller` to lists replication controllers.
-![[Pasted image 20240310150914.png]]
+![Pasted image 20240310150914](https://github.com/Km-Warda/Course-Documentations/assets/109697567/42a3641e-456a-4d17-9fc4-310b5e8d2b46)
 *Note:* The replication controller by default manages the pods it creates, but we can use the parameter `selector` to choose what pods it will manage. it's not a required input though. 
 ### ReplicaSets
 - The main big difference is the **apiVersion**, ReplicaSets uses apiVersion: apps/v1 
@@ -58,7 +58,7 @@ Notice that it has two metadata blocks, one for the replication controller, & th
 - The ReplicaSets supports more `matchlabels` than the Replication Controller.
 #### ReplicaSet with YAML files
 - The `matchlabels` refer to the labels of the chosen pods to be managed.  
-![[Pasted image 20240310154846.png]]
+![Pasted image 20240310154846](https://github.com/Km-Warda/Course-Documentations/assets/109697567/181c17a1-996e-401f-a9da-5ceb2789750f)
 ### Scaling
 There are multiple ways of updating the number of replicas "ex: 6 replicas":
 - Update the YAML file & use the `kubectl replace` command,
@@ -71,9 +71,9 @@ Deployment is a resource that provides us with the capability to upgrade the und
 - Rolling updates
 - Undo changes
 - Pause and resume changes as required, & more
-![[Pasted image 20240317204547.png]]
+![Pasted image 20240317204547](https://github.com/Km-Warda/Course-Documentations/assets/109697567/0cd533bf-7f5e-4a01-964c-468143a8cd8c)
 Deployments have the same YAML file as ReplicaSets, of course with the difference `kind: Deployment`, as well as the capability to do other upgrades to the underlying resources other than scaling. 
-![[Pasted image 20240317211304.png]]
+![Pasted image 20240317211304](https://github.com/Km-Warda/Course-Documentations/assets/109697567/b52c0b00-4350-48d2-83c6-e412e283a691)
 ## Generating YAML files 
 It can be hard to copy & paste YAML file contents to create new ones, we can work around this by generating a Deployment YAML file as following:
 - `kubectl create deployment --image=nginx nginx --dry-run=client -o yaml > custom-deployment.yaml` 
@@ -91,23 +91,23 @@ The NodePort service allows connection through a set of ports that are named as:
 - NodePort: are in range of ***30000 - 32767***, these are the ports the user access the node through.
 - Port: the port exposed on the service
 - TargetPort: The port exposed on the pod.
-![[Pasted image 20240317221234.png]]
+![Pasted image 20240317221234](https://github.com/Km-Warda/Course-Documentations/assets/109697567/93c1b5e9-f54b-4315-83f0-d801d5e14fbc)
 #### NodePorts with YAML files
-![[Pasted image 20240317223345.png]]
+![Pasted image 20240317223345](https://github.com/Km-Warda/Course-Documentations/assets/109697567/b1b38936-bce0-4e1c-83e2-8021abba8177)
 *Note:* If TargetPort wasn't given, it will be assumed the same as port, & if the NodePort wasn't given, a free port in the allowed range will be given.
 *Also Note:* The `ports:` is an array, so care the `-`.
 #### NodePorts for applications which are not in the same pod 
 Either we have one Node & different pods, each with it's IP address, or different nodes, each containing the pod, Kubernetes creates a service that spans over all the nodes, thus we are able to access any pod from the same NodePort, **without any further configuration**.
-![[Pasted image 20240317223722.png]]
+![Pasted image 20240317223722](https://github.com/Km-Warda/Course-Documentations/assets/109697567/6e6b2976-6523-4ea4-8a9d-0626ea9cd61b)
 ### ClusterIP
 This is the default service type, meaning if the type is not specified, the service will be chosen as ClusterIP.
 ClusterIP creates a virtual IP address to make other pods communicates with target pods easily, even in case of change in the IP address of the target pods.
 The ClusterIP service allows connection through a set of ports that are named as:
 - Port: the port exposed on the service
 - TargetPort: The port exposed on the pod.
-![[Pasted image 20240318000257.png]]
+![Pasted image 20240318000257](https://github.com/Km-Warda/Course-Documentations/assets/109697567/4be5e75e-da53-44f2-a065-a2ed0f67c8ec)
 #### ClusterIP with YAML files
-![[Pasted image 20240318001303.png]]
+![Pasted image 20240318001303](https://github.com/Km-Warda/Course-Documentations/assets/109697567/9c894dad-aef8-48d7-9874-8f9232ed911c)
 #### Differences between NodePort service & ClusterIP service
 - NodePorts exports a port on the CLUSTER level, that the USER or CLIENT accesses the target pod initially through it.
 - ClusterIP exports a port on the SERVICE level, that OTHER PODS access the target pod initially through it.
@@ -121,7 +121,7 @@ Namespaces is used for isolation of resources. There are 3 default Namespaces cr
 - kube-public: the namespace containing resources that are public for all users. 
 
 When in a namespace, we refer to the resources in it directly, however we can refer to resources in other namespaces as well by the following format:
-![[Pasted image 20240318005234.png]]
+![Pasted image 20240318005234](https://github.com/Km-Warda/Course-Documentations/assets/109697567/be5ad4d9-faf1-4dbb-acb6-7e111df5193b)
 
 Another aspect of namespace can be shown by the command `kubectl get pods`, which shows the pods in the current namespace. To show the pods in another namespace we can use the `--namespace=<NAMESPACE_NAME>` option. This option can also be used with most commands "ex: create or delete".
 Another wat of doing this is specifying the namespace in the YAML definition file.
@@ -132,7 +132,7 @@ We can switch between namespaces by the command
 `kubectl config set-context $(kubectl config current-context) --namespace=dev`
 ### ResourceQuota
 Each namespace has a maximum limit of resources, this can be controlled by creating a ResourceQuota:
-![[Pasted image 20240318012902.png]]
+![Pasted image 20240318012902](https://github.com/Km-Warda/Course-Documentations/assets/109697567/6e2932c3-91b6-4482-903d-676f3b9e9499)
 ## Imperative & Declarative Approaches
 - Imperative approach refer to specifying details & steps when building an infrastructure.
 - Declarative approach refer to using a tool & a file that contains the specs & details, such as YAML files, & then apply the infrastructure using a simple apply command. If any updates were done to the file & applied, the system should be smart enough to do all the necessary updates & changes automatically. 
@@ -148,7 +148,7 @@ We can completely delete and recreate objects or resources, using the `--force` 
 - We can create or update objects simply by using the command `kubectl apply` command
 - If we have many resources to be created, we can pass the path directly in the command & all the files will be created.
 - This method avoids errors that may occur in case of resource not existing before applying or creating a resource that already exists.  
-![[Pasted image 20240318014351.png]]
+![Pasted image 20240318014351](https://github.com/Km-Warda/Course-Documentations/assets/109697567/0c2004d2-4b17-4921-98e4-5993c9ece905)
 # 〔2〕Scheduling
 
 
