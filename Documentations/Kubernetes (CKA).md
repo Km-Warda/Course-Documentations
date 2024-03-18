@@ -124,8 +124,9 @@ Namespaces is used for isolation of resources. There are 3 default Namespaces cr
 When in a namespace, we refer to the resources in it directly, however we can refer to resources in other namespaces as well by the following format:
 ![Pasted image 20240318005234](https://github.com/Km-Warda/Course-Documentations/assets/109697567/be5ad4d9-faf1-4dbb-acb6-7e111df5193b)
 
-Another aspect of namespace can be shown by the command `kubectl get pods`, which shows the pods in the current namespace. To show the pods in another namespace we can use the `--namespace=<NAMESPACE_NAME>` option. This option can also be used with most commands "ex: create or delete".
-Another wat of doing this is specifying the namespace in the YAML definition file.
+Another aspect of namespace can be shown by the command `kubectl get pods`, which shows the pods in the current namespace:
+- To show the pods in another namespace we can use the `--namespace=<NAMESPACE_NAME>` option. This option can also be used with most commands "ex: create or delete". Another way of doing this is specifying the namespace in the YAML definition file.
+- To show pods in all namespaces, we can use the option `--all-namespaces`
 ### Creating Namespaces
 We can create namespaces either by YAML files, simply having the name of the namespace as the `metadata`, or the `kubectl create` command. 
 ### Switching Namespaces
