@@ -72,7 +72,8 @@ Deployment is a resource that provides us with the capability to upgrade the und
 - Undo changes
 - Pause and resume changes as required, & more
 ![Pasted image 20240317204547](https://github.com/Km-Warda/Course-Documentations/assets/109697567/0cd533bf-7f5e-4a01-964c-468143a8cd8c)
-Deployments have the same YAML file as ReplicaSets, of course with the difference `kind: Deployment`, as well as the capability to do other upgrades to the underlying resources other than scaling. 
+Deployments have the same YAML file as ReplicaSets, of course with the difference `kind: Deployment`, as well as the capability to do other upgrades to the underlying resources other than scaling.
+
 ![Pasted image 20240317211304](https://github.com/Km-Warda/Course-Documentations/assets/109697567/b52c0b00-4350-48d2-83c6-e412e283a691)
 ## Generating YAML files 
 It can be hard to copy & paste YAML file contents to create new ones, we can work around this by generating a Deployment YAML file as following:
