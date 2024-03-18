@@ -150,6 +150,7 @@ We can completely delete and recreate objects or resources, using the `--force` 
 - If we have many resources to be created, we can pass the path directly in the command & all the files will be created.
 - This method avoids errors that may occur in case of resource not existing before applying or creating a resource that already exists.  
 ![Pasted image 20240318014351](https://github.com/Km-Warda/Course-Documentations/assets/109697567/0c2004d2-4b17-4921-98e4-5993c9ece905)
+
 # 〔2〕Scheduling
 
 
