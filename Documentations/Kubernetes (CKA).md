@@ -176,8 +176,9 @@ kubectl get <RESOURCE>
 kubectl get <RESOURCE> --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
 ```
 
-`kubectl delete <RESOURCE> <RESOURCE_NAME>` 
-	Deletes a resource.
+Deletes a resource.
+- `kubectl delete <RESOURCE> <RESOURCE_NAME>` 
+
 - `kubectl edit <RESOURCE> <RESOURCE_NAME>`
 	Opens a YAML-syntaxed file for the selected resource to edit it's specs.
 - `kubectl create -f <YAML_FILE.yml>`
