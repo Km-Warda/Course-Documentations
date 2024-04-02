@@ -277,13 +277,15 @@ This can be very helpful in pods that are required in all existing & yet to exis
 
 # Commands Archive
 ______________________________________________________________________ 
-`kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>`
-	- Starts a pod inside a node, & runs the image in the pod.
+``` 
+kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>
+```
+- Starts a pod inside a node, & runs the image in the pod.
 ______________________________________________________________________
 ```
 kubectl get <RESOURCE> 
 ``` 
-- 	Lists running resources for the given resource.
+- Lists running resources for the given resource.
 ______________________________________________________________________
 ```
 kubectl get <RESOURCE> --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
