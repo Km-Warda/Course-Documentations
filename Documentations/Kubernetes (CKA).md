@@ -16,7 +16,7 @@ Replication controller ensures that the desired number of containers are running
 Responsible for orchestrating all operations within the cluster. It exposes the Kubernetes API, which is used by external users to perform management operations on the cluster, as well as the various controllers to monitor the state of the cluster and make necessary changes as required and by the worker nodes to communicate with the server.
 #### Kubelet
 A kubelet is an agent that runs on **each node** in a cluster. It listens for instructions from the Kube-apiserver and deploys or destroys containers on the nodes as required. It's more of a captain for each node. 
-	The Kube-apiserver periodically fetches status reports from the kubelet to monitor the status of nodes and containers on them.
+	- The Kube-apiserver periodically fetches status reports from the kubelet to monitor the status of nodes and containers on them.
 ***NOTE:*** You must always install the kubelet manually on the worker nodes
 #### The Kube-Proxy
 It ensures that the necessary rules are in place on the worker nodes to allow the containers running on them to communicate with each other.
@@ -44,9 +44,9 @@ spec:
 - `kubectl create -f pod-definetion-file.yml` starts the pod according the definition in the file.
 ##### Changing the image ENTRYPOINT or CMD arguments
 - To use a different ENTRYPOINT than that of a docker file, use the command `docker run --entrypoint <NEW_ENTRYPOINT> <IMAGE>`. 
-	This can be done in a Pod YAML file through the field `command:` under `containers`
+	- This can be done in a Pod YAML file through the field `command:` under `containers`
 - To use a different CMD than that of a docker file, use the command `docker run <NEW_COMMAND_OR_ARGUMENT> <IMAGE>`. 
-	This can be done in a Pod YAML file through the argument `args:` under `containers`
+	- This can be done in a Pod YAML file through the argument `args:` under `containers`
 
 ***NOTE:*** Both should be passed in JASON format: `["ARG01","ARG02"]`
 
@@ -198,7 +198,7 @@ spec:
 ## Node Selectors
 As the previous note explained, taints doesn't select the node that the pod gets assigned to. This can be achieved by Node selectors through **labels**
 - To assign a label to a node, we can use the command:
-	`kubectl label nodes <NODE-NAME> <LABEL_KEY>=<LABEL_VALUE>`
+	- `kubectl label nodes <NODE-NAME> <LABEL_KEY>=<LABEL_VALUE>`
 - In the pod YAML definition file, we can use the field `nodeSelector:` under `spec` for assigning the label.
 ```
 spec:
@@ -276,7 +276,7 @@ This can be very helpful in pods that are required in all existing & yet to exis
 
 
 # Commands Archive
-______________________________________________________________________ 
+______________________________________________________________________
 ``` 
 kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>
 ```
