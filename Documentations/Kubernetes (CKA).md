@@ -15,7 +15,7 @@ Replication controller ensures that the desired number of containers are running
 #### The Kube-APIserver
 Responsible for orchestrating all operations within the cluster. It exposes the Kubernetes API, which is used by external users to perform management operations on the cluster, as well as the various controllers to monitor the state of the cluster and make necessary changes as required and by the worker nodes to communicate with the server.
 #### Kubelet
-A kubelet is an agent that runs on **each node** in a cluster. It listens for instructions from the Kube-apiserver and deploys or destroys containers on the nodes as required. It's more of a captain for each node. 
+- A kubelet is an agent that runs on **each node** in a cluster. It listens for instructions from the Kube-apiserver and deploys or destroys containers on the nodes as required. It's more of a captain for each node. 
 	- The Kube-apiserver periodically fetches status reports from the kubelet to monitor the status of nodes and containers on them.
 ***NOTE:*** You must always install the kubelet manually on the worker nodes
 #### The Kube-Proxy
