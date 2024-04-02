@@ -181,7 +181,7 @@ There are three types of tolerations:
 3) **NoExecute**: similar to NoSchedule, but it also kills existing pods from before applying the taint.
 
 - Tainting is done by the command `kubectl taint nodes <NODE_NAME> <KEY>=<VALUE>:<TAINT_EFFECT>` 
-	ex: `kubectl taint nodes node01 app=frontend:NoSchedule`
+	- ex: `kubectl taint nodes node01 app=frontend:NoSchedule`
 We can check a node taint by `kubectl describe node <NODE_NAME> | grep Taint` 
 
 - Tolerations can be added in the YAML definition file under the field `tolerations:` 
