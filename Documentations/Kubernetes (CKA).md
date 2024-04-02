@@ -160,15 +160,21 @@ We can completely delete and recreate objects or resources, using the `--force` 
 
 
 # Commands Archive
-‎‎``kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>`` 
 - Starts a pod inside a node, & runs the image in the pod.
+```
+kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>
+``` 
 
 
-`kubectl get <RESOURCE>` 
-	Lists running resources for the given parameter.
+- Lists running resources for the given resource.
+```
+kubectl get <RESOURCE>
+``` 
 
-`kubectl describe pods <POD_NAME>` 
-Shows details about the pod.
+- Lists running resources with the given key values.
+```
+kubectl get <RESOURCE> --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
+```
 
 `kubectl delete <RESOURCE> <RESOURCE_NAME>` 
 	Deletes a resource.
