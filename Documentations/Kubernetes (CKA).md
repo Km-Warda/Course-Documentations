@@ -164,8 +164,6 @@ We can completely delete and recreate objects or resources, using the `--force` 
 ```
 kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>
 ``` 
-
-
 - Lists running resources for the given resource.
 ```
 kubectl get <RESOURCE>
@@ -178,7 +176,7 @@ kubectl get <RESOURCE> --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
 
 Deletes a resource.
 - `kubectl delete <RESOURCE> <RESOURCE_NAME>` 
-- ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ 
+-  
 Opens a YAML-syntaxed file for the selected resource to edit it's specs.
 - `kubectl edit <RESOURCE> <RESOURCE_NAME>`
 
