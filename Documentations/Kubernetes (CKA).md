@@ -277,7 +277,7 @@ This can be very helpful in pods that are required in all existing & yet to exis
 
 # Commands Archive
 ______________________________________________________________________ 
-- `kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>`
+`kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>`
 	- Starts a pod inside a node, & runs the image in the pod.
 ______________________________________________________________________
 ```
