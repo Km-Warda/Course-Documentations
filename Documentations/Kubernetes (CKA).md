@@ -16,7 +16,7 @@ Replication controller ensures that the desired number of containers are running
 Responsible for orchestrating all operations within the cluster. It exposes the Kubernetes API, which is used by external users to perform management operations on the cluster, as well as the various controllers to monitor the state of the cluster and make necessary changes as required and by the worker nodes to communicate with the server.
 #### Kubelet
 - A kubelet is an agent that runs on **each node** in a cluster. It listens for instructions from the Kube-apiserver and deploys or destroys containers on the nodes as required. It's more of a captain for each node. 
-	- The Kube-apiserver periodically fetches status reports from the kubelet to monitor the status of nodes and containers on them.
+- The Kube-apiserver periodically fetches status reports from the kubelet to monitor the status of nodes and containers on them.
 ***NOTE:*** You must always install the kubelet manually on the worker nodes
 #### The Kube-Proxy
 It ensures that the necessary rules are in place on the worker nodes to allow the containers running on them to communicate with each other.
@@ -170,7 +170,7 @@ In every pod YAML file there is a field called `nodeName:` that by default is no
 - if we don't have a scheduler, the pod is set in a pending state, which can be seen by `kubectl get pods`, until we manually assign it to a node.
 We assign pods manually by specifying a node to the field `nodeName: node01`.
 ***Once Created, we cannot change the assigned node***, the other way to change it is to create a ***Binding Object & sending a post request to the post-binding-API***, which basically mimics the actual schedular.
-![[Pasted image 20240320232355.png]]
+![Pasted image 20240320232355](https://github.com/Km-Warda/Course-Documentations/assets/109697567/ae523c02-3e64-4d6a-9227-77aeddbc726f)
 ## Taints & Tolerations
 This is a scheduling scheme, according to the following:
 - node is tainted. 
@@ -237,7 +237,7 @@ There are multiple node affinity operators, here are the important ones:
 4) `DoesNotExist`: No label with this key exists on the object, **no need for the value.**
 #### Node Selectors vs Node Affinity 
 
-![[Pasted image 20240321065104.png]]
+![Pasted image 20240321065104](https://github.com/Km-Warda/Course-Documentations/assets/109697567/65dcd8f0-04c3-4b52-bcb0-4476d320fa11)
 ## Resource Management on a node 
 ### Resource Requests
 - Kubernetes Scheduler looks through the nodes that have free resources so it can deploy pods in them, and through Resource Requests, we can specify the minimum required amount of CPU & memory that the scheduler will look for, FOR EACH CONTIANER in the pod.
@@ -246,24 +246,24 @@ By default, containers has no resource limits. This can consume node resources r
 Using Resource Limits, we can limit the pod consumed resources. If the pod tried to exceed that limit, the system threshold the CPU. However the pod CAN exceed the limit of the set memory, but the pod will be terminated if it kept exceeding the limited memory, giving an error of `OOM (Out Of Memory)`.
 
 *Note:* If limits were set but no requests given in the definition file, the requests are set to equal the limits.
-![[Pasted image 20240322005727.png]]
+![Pasted image 20240322005727](https://github.com/Km-Warda/Course-Documentations/assets/109697567/16059eac-e53a-4d97-adb7-564c4f3eb2f7)
 #### *Note:* Ideal Setup for Resource Settings is Resource Requests with no Resource Limits
 Setting both resource limits & requests are helpful for specifying exact resources, but there are cases that we might want a pod to exceed its limit only if there are no used CPUs.
 - The ideal setup would be having ***only resource requests*** active, this will guarantee each pod its required resources to run, without one thresholding the other pod.
 - So in case a pod required more resources it will consume only available resources.
 - There are cases that limits are important, but thresholding pods generally is avoided.
-![[Pasted image 20240322014211.png]]
+![Pasted image 20240322014211](https://github.com/Km-Warda/Course-Documentations/assets/109697567/4bcda0f5-4521-4fa1-aca5-c53691ac60d9)
 ### LimitRange
 LimitRange are for specifying the default values for newly created pods. Exsisting pods won't be affected.
-![[Pasted image 20240322014726.png]]
+![Pasted image 20240322014726](https://github.com/Km-Warda/Course-Documentations/assets/109697567/c119c8c9-4443-4b3c-9c94-efcd5d45cc56)
 ### Resource Quotas
 Resource Quotas are Name Space level resource control, they are hard limits for the resources consumed by all nodes & pods in a Name Space
-![[Pasted image 20240322015256.png]]
+![Pasted image 20240322015256](https://github.com/Km-Warda/Course-Documentations/assets/109697567/3a2010b6-a849-4ab2-8f9b-d7a361cc4e7b)
 ## DaemonSets
 Similar to Replica Sets, but instead they are for scheduling pods **automatically** to new nodes.
 This can be very helpful in pods that are required in all existing & yet to exist nodes, such as monitoring & logging pods.
 - The definition file is the same as the ReplicaSets, with the difference being `kind: DaemonSet`
-![[Pasted image 20240322024039.png]]
+![Pasted image 20240322024039](https://github.com/Km-Warda/Course-Documentations/assets/109697567/dd7f221a-d8f4-4bd8-88c6-67211762dbe1)
 # 〔3〕Application Lifecycle Management
 ## 
 
