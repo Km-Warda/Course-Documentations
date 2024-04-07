@@ -43,12 +43,12 @@ spec:
 `apiVersion` refers to the used Kubernetes apiVersion. `kind` refers to what are we trying to create, `metadata` is the data about the object "name, labels, etc", `spec` refers to the specifications.
 - `kubectl create -f pod-definetion-file.yml` starts the pod according the definition in the file.
 ##### Changing the image ENTRYPOINT or CMD arguments
-- To use a different ENTRYPOINT than that of a docker file, use the command `docker run --entrypoint <NEW_ENTRYPOINT> <IMAGE>`. 
+- To use a different ENTRYPOINT than that of a docker file, use the command `docker run -- --entrypoint <NEW_ENTRYPOINT> <IMAGE>`. 
 	- This can be done in a Pod YAML file through the field `command:` under `containers`
-- To use a different CMD than that of a docker file, use the command `docker run <NEW_COMMAND_OR_ARGUMENT> <IMAGE>`. 
+- To use a different CMD than that of a docker file, use the command `docker run -- <NEW_COMMAND_OR_ARGUMENT> <IMAGE>`. 
 	- This can be done in a Pod YAML file through the argument `args:` under `containers`
 
-***NOTE:*** Both should be passed in JASON format: `["ARG01","ARG02"]`
+***NOTE:*** Both should be passed in JASON format: `["ARG01","ARG02"]`, And the `--` before the commands are for using non-Kubernetes options.
 
 ## Replication Controller & ReplicaSets
 ### Replication Controller
