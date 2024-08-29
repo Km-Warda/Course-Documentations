@@ -223,6 +223,7 @@ print(round(3.7))
 >> 4
 ```
 
+
 ### Math Functions
 Import the math functions by:
 ```
@@ -248,6 +249,7 @@ Gives a square root of a number
 ```
 print(sqrt(9))
 ```
+
 
 ### Lists Functions
 #### extend()
