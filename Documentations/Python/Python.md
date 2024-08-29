@@ -310,7 +310,7 @@ Sorts a list in ascending order (alphabetical or numerical).
 list1.sort()
 print(list1)
 ```
-###### reverse()
+##### reverse()
 Sorts a list in descending order (alphabetical or numerical).
 ```
 list1.reverse()
