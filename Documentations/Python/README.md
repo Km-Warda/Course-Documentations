@@ -152,25 +152,25 @@ for num in range(6, 10):
 ```
 
 ## Python Functions
-###### len()
+#### len()
 Shows number of characters
 ```
 len(var) 
 ```
 
-###### upper() & lower()
+#### upper() & lower()
 Converts text characters into lower & upper case  
 ```
 print("This is ".upper() + var.upper())
 ```
 
-###### isupper() & islower()
+#### isupper() & islower()
 Checks if the characters are lower or upper case and return a bool value
 ```
 print(var.isupper())
 ```
 
-###### index()
+#### index()
 Can be given a parameter to refer to the index of its first appearance, can be given one character or words
 ```
 var = "This is John"
@@ -183,14 +183,14 @@ print(var.index("is"))
 ### NOT 4 because it appeared first in "This"
 ```
 
-###### replace()
+#### replace()
 Can be given two parameters to replace a character with another
 ```
 var = "This is John"
 print(var.replace ("John", "Mark"))
 ```
 
-###### str()
+#### str()
 Converts a number type variable into string type
 ```
 num = 5
@@ -198,119 +198,119 @@ print(str(num) + "is an odd number")
 ```
 ***Note:*** to use the `+` operation when dealing with strings, we need to convert the number into a string, meaning `print(num + "is an odd number")` gives an error.
 
-###### int()
+#### int()
 Converts a string type variable into integers and numbers type
 ```
 print(int(13))
 ```
 
-###### float()
+#### float()
 Converts a string type variable into numbers type
 ```
 print(float(13))
 ```
 
-###### max() & min
+#### max() & min
 Shows the maximum and minimum number of the given values
 ```
 print(max(5,3))
 print(min(5,3))
 ```
-###### round()
+#### round()
 Rounds a number to nearest possible integer
 ```
 print(round(3.7))
 >> 4
 ```
 
-#### Math Functions
+### Math Functions
 Import the math functions by:
 ```
 from math import *
 ```
 
-###### floor()
+#### floor()
 Rounds a number to smallest integer "removes decimal points"
 ```
 print(floor(3.7))
 >> 3 
 ```
 
-###### ceil()
+#### ceil()
 Rounds a number to the bigger integer no matter what
 ```
 print(ceil(3.2))
 >> 4 
 ```
 
-###### sqrt()
+#### sqrt()
 Gives a square root of a number 
 ```
 print(sqrt(9))
 ```
 
 ### Lists Functions
-###### extend()
+#### extend()
 Adds two lists elements together.
 ```
 list1.extend(list2)
 print(list1)
 ```
 
-###### append()
+#### append()
 Adds an element to the list.
 ```
 list1.append("new_element")
 print(list1)
 ```
 
-###### insert()
+#### insert()
 Adds an element to the given index and pushes existing elements after it.
 ```
 list1.insert(3, "new_element")
 print(list1)
 ```
 
-###### remove()
+#### remove()
 Removes first occurrence of a given element
 ```
 list1.remove("new_element")
 print(list1)
 ```
 
-###### clear()
+#### clear()
 Removes all the elements from the list.
 ```
 list1.clear()
 print(list1)
 ```
 
-###### pop()
+#### pop()
 Drops the last element from the list
 ```
 list1.pop()
 print(list1)
 ```
 
-###### index()
+#### index()
 Locates the index of an element in a list
 ```
 print(list1.index("element"))
 ```
 
-###### count()
+#### count()
 Counts how many times an element reoccur in a list
 ```
 print(list1.count("element"))
 ```
 
-###### sort()
+#### sort()
 Sorts a list in ascending order (alphabetical or numerical).
 ```
 list1.sort()
 print(list1)
 ```
-##### reverse()
+#### reverse()
 Sorts a list in descending order (alphabetical or numerical).
 ```
 list1.reverse()
