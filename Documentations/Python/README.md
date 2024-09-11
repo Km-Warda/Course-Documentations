@@ -42,6 +42,17 @@ coordinates = (42,15,26)
 ```
 coordinates = [(42,15,26), (13,2,8)]
 ```
+### Nested Lists
+We can create lists that behave as a Matrix of rows & columns, by setting lists as items in the main list.
+```
+number_grid = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+    [0]
+]
+print(number_grid[0][1])
+```
 ## Dictionaries
 - Dictionaries are used for storing key-value pairs
 - We can get the value of the key by the function `get()`
@@ -150,7 +161,43 @@ for num in range(10):
 for num in range(6, 10):
 	print(num)
 ```
-
+## Try & Except
+- `try` can be used to handle error inputs in the program to avoid crashing.
+- For example if a given input isn't expected or the wrong type of variable, we can use `except` to avoid crashing and redirect the output.
+- Next example divides 10 by a given number, if the number is 0, the code prompts us an input error instead of crashing.
+```
+num = input("Divide 10 by number: ")
+try:
+    result = 10 / int(num)
+    print(result)
+except:
+    print("You can't divide by zero")
+```
+## Classes and Object
+- We use classes to define variables of specific definition or various key values.
+```
+class Student:
+    def __init__(self, name, major, GPA, is_on_propation):
+        self.name = name
+        self.major = major
+        self.GPA = GPA
+        self.is_on_propation = is_on_propation
+```
+- We use Object to define a variable from a Class.
+```
+Student1 = Student("Jack", "Engineering", 3.7, False)
+print(Student1.GPA)
+```
+- If the Class is in another module, you can import it
+```
+from Student_file import Student
+```
+- We can inherit functions from a Class into another Class.
+```
+class Foreign_Student(Student):
+	~~~ ~~~
+	~~~~~ ~~~
+```
 ## Python Functions
 #### len()
 Shows number of characters
