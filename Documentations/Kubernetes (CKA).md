@@ -66,6 +66,8 @@ Notice that it has two metadata blocks, one for the replication controller, & th
 #### ReplicaSet with YAML files
 - The `matchlabels` refer to the labels of the chosen pods to be managed.  
 ![Pasted image 20240310154846](https://github.com/Km-Warda/Course-Documentations/assets/109697567/181c17a1-996e-401f-a9da-5ceb2789750f)
+
+*Note:* You can check the used apiVersion of a resource by: `kubectl api-resources | grep <RESOURCE_NAME>`
 ### Scaling
 There are multiple ways of updating the number of replicas "ex: 6 replicas":
 - Update the YAML file & use the `kubectl replace` command,
@@ -86,8 +88,7 @@ Deployments have the same YAML file as ReplicaSets, of course with the differenc
 We can generate YAML files of different resources by using `--dry-run=client -o yaml > <FILE>.yaml`
 ##### Examples:
 - `kubectl run POD_NAME --image=nginx --dry-run=client -o yaml > pod.yaml` 
-- `kubectl create deployment DEPLOYMENT_NAME --image=nginx --replicas=3 --dry-
-
+- `kubectl create deployment DEPLOYMENT_NAME --image=nginx --replicas=3 --dry-run=client -o yaml > deployment.yaml`
 - Create the new resource by `kubectl create <YOUR_FILE>.yaml`.
 
 ## Services
@@ -169,7 +170,10 @@ In every pod YAML file there is a field called `nodeName:` that by default is no
 - If a Scheduler exists, it looks for Pods that doesn't have this property set & schedule it to a node according to the scheduling algorithm.
 - if we don't have a scheduler, the pod is set in a pending state, which can be seen by `kubectl get pods`, until we manually assign it to a node.
 We assign pods manually by specifying a node to the field `nodeName: node01`.
-***Once Created, we cannot change the assigned node***, the other way to change it is to create a ***Binding Object & sending a post request to the post-binding-API***, which basically mimics the actual schedular.
+***Once Created, we cannot change the assigned node***.
+![Pasted image 20241029222842](https://github.com/user-attachments/assets/2838a1ec-8378-4248-b9d0-63669bfd0602)
+
+The other way to change it is to create a ***Binding Object & sending a post request to the post-binding-API***, which basically mimics the actual schedular.
 ![Pasted image 20240320232355](https://github.com/Km-Warda/Course-Documentations/assets/109697567/ae523c02-3e64-4d6a-9227-77aeddbc726f)
 ## Taints & Tolerations
 This is a scheduling scheme, according to the following:
@@ -265,7 +269,167 @@ This can be very helpful in pods that are required in all existing & yet to exis
 - The definition file is the same as the ReplicaSets, with the difference being `kind: DaemonSet`
 ![Pasted image 20240322024039](https://github.com/Km-Warda/Course-Documentations/assets/109697567/dd7f221a-d8f4-4bd8-88c6-67211762dbe1)
 # 〔3〕Application Lifecycle Management
-## 
+## Versioning & Pods Rollbacks
+There are two deployment strategies available for rollouts.
+1) Recreate: Downs all the pods & runs them again with the new image
+2) Rolling Update: Downs pod by pod, & replace them one by one to avoid downtime.
+If no strategy is set, the default strategy is Rolling Update.
+![[Pasted image 20240402054235.png]]
+#### Rollbacks
+Suppose we used `kubectl set image DEPLOYMENT_NAME/CONTAINER_NAME nginx:nginx:1.9.1` to change the deployment pods. Now it has a new version, while the old still exists, but disabled in the old replica set. & this can be shown through the `kubectl get` command.
+- `kubectl rollout status DEPLOYMENT_NAME/CONTAINER_NAME` Shows current status  of rollouts.
+- `kubectl rollout history DEPLOYMENT_NAME>/CONTAINER_NAME` Shows history of rollouts.
+We can rollback to older versions by the command: `kubectl rollout undo DEPLOYMENT_NAME/CONTAINER_NAME`
+## Environmental Variables
+Setting an environmental variable is done bey specifying the variable under `env:` or `envFrom:` specification. 
+
+For `env:`, each variable has a name & a value, the value can be passed in 3 different ways, either as a plain key value pair, through a ***ConfigMap***, or through ***Secrets***.
+![[Pasted image 20240415161748.png]]
+
+For `envFrom:` we specify the ConfigMaps or the secrets to the desired Pod YAML file
+![[Pasted image 20240415164344.png]]
+### ConfigMaps
+1) Creating a ConfigMap can be done imperatively by `kubectl create configmap <CONFIGMAP_NAME>`, & passing the variables through the command `--from-literal` or `--from-file`, as these examples:
+	- `kubectl create configmap My_ConfigMap --from-literal=APP_COLOR=RED`
+	- `kubectl create configmap My_ConfigMap --from-file=/home/user01/ConfigMap.properties`
+2) Creating a ConfigMap declaratively through a YAML file can be done as following:
+```
+apiVersion: vl
+kind: ConfigMap
+metadata :
+	name: app-config
+data :
+	APP_COLOR: blue
+	APP_MODE: prod
+```
+We can show all defined ConfigMaps by the command `kubectl get`, or show detailed info "the defined variables" through the command `kubectl describe`
+### Secrets
+Secrets are the same as ConfigMaps, but they use encoded values of the secrets instead of the values itself.
+- Basically the same notes as the ConfigMaps, with using the `secret` parameter instead.
+To encode a value: `echo -n 'value' | base64 `
+To decode a value: `echo -n 'cGFzd3Jk' | base64 --decode`
+
+**IMPORTANT NOTES:** 
+1) Secrets doesn't encrypt the values, they only decode them, anyone can decode the value with the `base64 --decode` command if they can access the file.
+2) Do not upload Secret objects along with code into the repository.
+3) Secrets are not encrypted in ETCD by default, we should enable encryption at rest, this has a documentation specifying the details.
+4) Consider third-party secrets store providers, such as AWS Provider, Azure Provider, GCP Provider, or Vault Provider.
+5) Kubelet stores the secret into a ".tmpfs" so that the secret is not written to disk storage.
+## InitContainers & Multi-Container Pods
+The container section is an array, each container specification is done by a new `-`
+There is a new type of containers called initContainers, these containers have a command or a process that should be completed before running other containers, if it fails the pod will keep restarting until this container is executed successfully.
+This section can be demonstrated by the following example:
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox
+    command: ['sh', '-c', 'git clone <some-repository-that-will-be-used-by-application> ; done;']
+```
+
+# 〔4〕Cluster Maintenance 
+## OS upgrades & restarting Nodes (Draining & Cordoning Nodes)
+- When a node goes down, Kubernetes waits 5 minutes & then terminate all the pods from that node, considering them dead.
+- These 5 minutes are the default value of what's called **pod-eviction-timeout** & is set on the **kube-controller-manager**. `kube-controller-manager --pod-eviction-timeout=5m0s` 
+- After the pod-eviction-timeout, the node comes back online without any pods scheduled on it.
+- Pods that are part of replica sets, will be recreated on other nodes to satisfy the required number of replicas.
+From the previous notes, if we have a maintenance task to be performed on a node, like an OS upgrade, we may not be sure if the node will be back online.
+So in a safe way of dealing with the node pods would be explained as follows:
+- We can use the command `kubectl drain node-1` to terminate the pods & recreate them on other nodes, while marking the node unschedulable "Cordoned".
+- Or we can also use the command `kubectl cordon node-1` to mark the node unschedulable without terminating the existing pods.
+- To mark the node as schedulable again, use the command `kubectl uncordon node-1`, but take note that moved pods won't automatically go back to the original node.
+
+# 〔5〕Security 
+The kube-apiserver is at the center of all operations within Kubernetes. We interact with it through the kube control utility or by accessing the API directly, and through that you can perform almost any operation in the cluster. So that's the first line of defense.
+
+We need to make two types of decisions: Who can access the cluster and what can they do?
+- Who can access the API server is defined by the authentication mechanisms.
+- What can they do is defined by authorization mechanisms.
+
+All communication with the cluster between the various components such as the ETCD cluster, the kube-controller-manager, scheduler, API server, as well as those running on the worker nodes such as the Kubelet and the kube-proxy is secured using ***TLS encryption***.
+
+What about communication between applications within the cluster? By default, all Pods can access all other Pods within the cluster. We can restrict access between them using Network policies.
+![[Pasted image 20240515125422.png]]
+## TLS Certificates
+Multiple certificates are needed in our cluster for authorization, some are Client Certificates for components acting as Clients, & others are Server Certificates for components acting as  Servers. as well as a certificate authority (CA).
+![[Pasted image 20240518142529.png]]
+### Creating TLS Certificates in the cluster 
+There are different tools available such as EasyRSA, OpenSSL, or CFSSL, or many others.
+In this section OpenSSL tool is used. Here are the steps required for each component.
+1) Creating a private key.
+2) Creating a certificate signing request along with the created key, specifying the name of the component this certificate is for (in the `/CN=<NAME>` field).
+3) Signing the certificate using `openssl x509` command by specifying the certificate signing request
+#### Creating certificates for the CA 
+- Since this certificate is for the CA itself, it is self-signed by the CA using its own private key that it generated in the first step.
+![[Pasted image 20240518145049.png]]
+#### Creating client certificates "acting as admin users"
+- We should take care that the name given in the field `/CN=<NAME>` is the name that Kube Control client authenticates with and when you run the Kube Control command. So in the auditing logs and elsewhere, this is the name that you will see. So provide a relevant name in this field.
+- The signing request is done with the client private key created in the first step.
+- The signing is done by specifying  the CA certificate and the CA key.
+- To assign this client to a group with some privileges, we can do this by the `/O=<GROUP>`in the signing request.
+![[Pasted image 20240518145923.png]]
+#### Certificates for system components "client certificates"
+System components (Kube-scheduler, kube-controller-manager, kube-proxy) must have their name prefixed with the keyword `system`.
+![[Pasted image 20240518150920.png]]
+#### Using the client certificates (Administration management)
+Can be done either with the `curl` command or the kube-config file, stating the client certificate, the private key, & the CA certificate.
+![[Pasted image 20240518154227.png]]
+#### Creating Server Certificates
+- Components as ETCD might be deployed as a cluster across multiple servers as in a high availability environment. Thus we must generate additional peer certificates to secure communication between the different members in the cluster.
+	After creating the peer certificates, specify them while starting the ETCD server.
+![[Pasted image 20240518165901.png]]
+- Components as the Kube-API-Server might be referred to in many names, thus it may be required to state these names in the certificate.
+	This is done through specifying the alternate names in the OpenSSL config file unfer the `[alt_names]` section. 
+![[Pasted image 20240518165842.png]]
+-  Some server components may act as a client, as the kube-apiserver communicating to the ETCD and kubelet servers. 
+	The location of these certificates are passed in to the Kube API servers executable or service configuration file.
+![[Pasted image 20240518172049.png]]
+- For Kubelet certificates, we need a key-certificate pair for each node in the cluster.
+	- The naming formats starts with `system` as indicated before, then the `node` followed by the name of the node. 
+	- The nodes must be added to groups with required privileges as discussed for admin users certificates. 
+	- Then we specify the root CA certificate, then the kubelet node certificates in the kubelet config file. 
+![[Pasted image 20240518172324.png]]
+
+ 
+
+
+
+
+## Authorization to the cluster
+There are 3 main types of users we need to take in consideration when managing user authentication: 
+- Administrative users, such as Kube Admins & the developers.
+- Application end users.
+- Bots, third party applications accessing the cluster for integration purposes. such as other processes or services or applications that require access to the cluster.
+Security of application End Users is managed by the applications themselves, internally. So we will take them out of discussion.
+### Accounts Authorization
+All user access can be managed by the kube-apiserver, through set of authentication methods
+- Static Password File ❌
+- Static Token File ❌
+- Certificates ✔️
+- Identity Services ✔️
+#### Using a Static password file "Not the best practice"
+Using a three column '.csv' file, of password, username, users ID. And then passing the file to the `kube-apiserver.service`, then restarting the service.
+*Note:* This file also can optionally have a fourth column, specifying the user group.
+
+Or, If you set up your cluster using the Kubeadm tool, then you must modify the Kube-APIserver definition file. The Kubeadm tool will automatically restart the Kube API server once you update this file.
+![[Pasted image 20240515141701.png]]
+To authenticate using the user & password, we specify them in a curl command like this `curl -v -k https://master-node-ip:6443/api/vI/pods -u "userl:password123"`
+#### Using a Token file "Not the best practice"
+Similar to static password files, we can use a 3, or optionally a 4 column '.csv' file, but the first column is the token not the password.
+To authenticate using the token, we specify them in a curl command like this `curl -v -k https://master-node-ip:6443/api/v1/pods --header "Authorization: Bearer KpjCVb17rCFAHYPkBzRb7gu1cUc4B"`
+
+
+
 
 
 
@@ -283,7 +447,7 @@ kubectl run <CONTAINER_NAME> --image <IMAGE_NAME>
 - Starts a pod inside a node, & runs the image in the pod.
 ______________________________________________________________________
 ```
-kubectl get <RESOURCE> 
+kubectl get <RESOURCE>
 ``` 
 - Lists running resources for the given resource.
 ______________________________________________________________________
@@ -312,6 +476,11 @@ kubectl create -f <YAML_FILE.yml>
 ```
 - Starts a resource according the definition in the file.
 ______________________________________________________________________
+```
+kubectl api-resources | grep <RESOURCE_NAME>
+```
+- check for apiVersion for a resource.
+------------------------------------------------------------------
 ```
 kubectl replace -f <YAML_FILE.yml>
 ``` 
@@ -367,4 +536,71 @@ ______________________________________________________________________
 kubectl log -f <POD_NAME> <CONTAINER_NAME_IF_MULTIPLE_EXISTED>
 ```
 - Shows the life logs for the container in a pod.
+______________________________________________________________________
+```
+kubectl rollout status <DEPLOYMENT_NAME>/<CONTAINER_NAME>
+```
+- Shows current rollout status.
+______________________________________________________________________
+```
+kubectl rollout history <DEPLOYMENT_NAME>/<CONTAINER_NAME>
+```
+- Shows applied history of rollouts.
+______________________________________________________________________
+```
+kubectl rollout undo <DEPLOYMENT_NAME>/<CONTAINER_NAME>
+```
+- Rollbacks a pod to the older version.
+______________________________________________________________________
+```
+kubectl create configmap <CONFIGMAP_NAME> --from-literal=<KEY_01>=<VALUE_01>  --from-literal=<KEY_02>=<VALUE_01> 
+
+kubectl create configmap <CONFIGMAP_NAME> --from-file=<FILE_PATH>
+```
+- Creating a ConfigMap imperatively. 
+______________________________________________________________________
+```
+kube-controller-manager --pod-eviction-timeout=<N>m<N>s
+```
+- Setting the node eviction timeout.
+______________________________________________________________________
+```
+kubectl drain <NODE>
+```
+- Moving pods on a node to another & cordoning (marks as unschedulable) that node.
+______________________________________________________________________
+```
+kubectl cordon <NODE>
+```
+- Cordoning (marks as unschedulable) that node.
+______________________________________________________________________
+```
+kubectl uncordon <NODE>
+```
+- Uncordoning (marks as schedulable) that node.
+______________________________________________________________________
+```
+
+```
+- 
+______________________________________________________________________
+```
+
+```
+- 
+______________________________________________________________________
+```
+
+```
+- 
+______________________________________________________________________
+```
+
+```
+- 
+______________________________________________________________________
+```
+
+```
+- 
 ______________________________________________________________________
