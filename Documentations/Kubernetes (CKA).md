@@ -187,6 +187,7 @@ There are three types of tolerations:
 - Tainting is done by the command `kubectl taint nodes <NODE_NAME> <KEY>=<VALUE>:<TAINT_EFFECT>` 
 	- ex: `kubectl taint nodes node01 app=frontend:NoSchedule`
 We can check a node taint by `kubectl describe node <NODE_NAME> | grep Taint` 
+- Removing taints is done through applying the same command again.
 
 - Tolerations can be added in the YAML definition file under the field `tolerations:` 
 ```
@@ -455,6 +456,11 @@ ______________________________________________________________________
 kubectl get <RESOURCE> --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
 ``` 
 - Lists running resources with the given key values.
+______________________________________________________________________
+```
+kubectl get all --selector <KEY_1>=<VALUE_2>,<KEY_1>=<VALUE_2>
+``` 
+- Lists all types of running resources with the given key values.
 ______________________________________________________________________
 ```
 kubectl describe pods <POD_NAME>
