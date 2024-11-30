@@ -133,6 +133,7 @@ These blocks work together to define and manage infrastructure in a modular, reu
 ![Pasted image 20240818224622](https://github.com/user-attachments/assets/738ed53d-0ae3-4319-ac60-a315b11aa285)
 
 - `terraform console`
+
 ![Pasted image 20240818224653](https://github.com/user-attachments/assets/901071bb-2354-40db-a76e-7352f8cf8a96)
 ![Pasted image 20240818224715](https://github.com/user-attachments/assets/6f3926fc-1de4-40ea-bf55-a83129c91cec)
 ![Pasted image 20240818225426](https://github.com/user-attachments/assets/41d4f476-bba4-4709-a1d8-803f1a4b5402)
