@@ -131,7 +131,8 @@ These blocks work together to define and manage infrastructure in a modular, reu
 --------------------------------------------------------------------------
 ![Pasted image 20240818225337](https://github.com/user-attachments/assets/7ea0071e-f05a-461c-ac18-6090262592b1)
 ![Pasted image 20240818224622](https://github.com/user-attachments/assets/738ed53d-0ae3-4319-ac60-a315b11aa285)
-`terraform console`
+
+- `terraform console`
 ![Pasted image 20240818224653](https://github.com/user-attachments/assets/901071bb-2354-40db-a76e-7352f8cf8a96)
 ![Pasted image 20240818224715](https://github.com/user-attachments/assets/6f3926fc-1de4-40ea-bf55-a83129c91cec)
 ![Pasted image 20240818225426](https://github.com/user-attachments/assets/41d4f476-bba4-4709-a1d8-803f1a4b5402)
@@ -139,6 +140,7 @@ These blocks work together to define and manage infrastructure in a modular, reu
 ![Pasted image 20240818225514](https://github.com/user-attachments/assets/9e81bd8e-6ca0-47f2-bfff-4525b67a636b)
 ![Pasted image 20240818225858](https://github.com/user-attachments/assets/8021a78b-d6a7-4898-a7b8-b31a18272f4b)
 ![Pasted image 20240818233302](https://github.com/user-attachments/assets/ef02d060-55b5-4de3-b258-8370d0d98aac)
+
 Filtering traffic 
 ![Pasted image 20240818233457](https://github.com/user-attachments/assets/dd53ecca-2add-49d9-8dfe-43124cb05857)
 ![Pasted image 20240819073455](https://github.com/user-attachments/assets/e84858b6-9417-4ec5-8def-ef3b099551e3)
