@@ -12,7 +12,7 @@ Terraform blocks are the basic units of configuration in Terraform. They define 
 ### 1. **Provider Block**
    - **Purpose:** Defines the provider, which is the plugin used to interact with the cloud or service API (e.g., AWS, Azure, GCP).
    - **Example:**
-     ```
+     ```hcl
      provider "aws" {
        region = "us-west-2"
      }
