@@ -275,7 +275,7 @@ There are two deployment strategies available for rollouts.
 1) Recreate: Downs all the pods & runs them again with the new image
 2) Rolling Update: Downs pod by pod, & replace them one by one to avoid downtime.
 If no strategy is set, the default strategy is Rolling Update.
-![[Pasted image 20240402054235.png]]
+![Pasted image 20240402054235](https://github.com/user-attachments/assets/4bbfff98-53e8-49f9-848c-643f8ca53879)
 #### Rollbacks
 Suppose we used `kubectl set image DEPLOYMENT_NAME/CONTAINER_NAME nginx:nginx:1.9.1` to change the deployment pods. Now it has a new version, while the old still exists, but disabled in the old replica set. & this can be shown through the `kubectl get` command.
 - `kubectl rollout status DEPLOYMENT_NAME/CONTAINER_NAME` Shows current status  of rollouts.
@@ -285,10 +285,10 @@ We can rollback to older versions by the command: `kubectl rollout undo DEPLOYME
 Setting an environmental variable is done bey specifying the variable under `env:` or `envFrom:` specification. 
 
 For `env:`, each variable has a name & a value, the value can be passed in 3 different ways, either as a plain key value pair, through a ***ConfigMap***, or through ***Secrets***.
-![[Pasted image 20240415161748.png]]
+![Pasted image 20240415161748](https://github.com/user-attachments/assets/9387ad89-a6a9-4121-8b5e-8f8a7acc8594)
 
 For `envFrom:` we specify the ConfigMaps or the secrets to the desired Pod YAML file
-![[Pasted image 20240415164344.png]]
+![Pasted image 20240415164344](https://github.com/user-attachments/assets/7d3c0866-5d33-4f9a-9d40-de0773cf1981)
 ### ConfigMaps
 1) Creating a ConfigMap can be done imperatively by `kubectl create configmap <CONFIGMAP_NAME>`, & passing the variables through the command `--from-literal` or `--from-file`, as these examples:
 	- `kubectl create configmap My_ConfigMap --from-literal=APP_COLOR=RED`
@@ -360,10 +360,10 @@ We need to make two types of decisions: Who can access the cluster and what can 
 All communication with the cluster between the various components such as the ETCD cluster, the kube-controller-manager, scheduler, API server, as well as those running on the worker nodes such as the Kubelet and the kube-proxy is secured using ***TLS encryption***.
 
 What about communication between applications within the cluster? By default, all Pods can access all other Pods within the cluster. We can restrict access between them using Network policies.
-![[Pasted image 20240515125422.png]]
+![Pasted image 20240515125422](https://github.com/user-attachments/assets/b62ab87f-e4c6-40f3-a2f0-b7d4fcce4645)
 ## TLS Certificates
 Multiple certificates are needed in our cluster for authorization, some are Client Certificates for components acting as Clients, & others are Server Certificates for components acting as  Servers. as well as a certificate authority (CA).
-![[Pasted image 20240518142529.png]]
+![Pasted image 20240518142529](https://github.com/user-attachments/assets/fe48ae84-32b6-4a6d-9ebe-a47b272e0ff2)
 ### Creating TLS Certificates in the cluster 
 There are different tools available such as EasyRSA, OpenSSL, or CFSSL, or many others.
 In this section OpenSSL tool is used. Here are the steps required for each component.
@@ -372,34 +372,34 @@ In this section OpenSSL tool is used. Here are the steps required for each compo
 3) Signing the certificate using `openssl x509` command by specifying the certificate signing request
 #### Creating certificates for the CA 
 - Since this certificate is for the CA itself, it is self-signed by the CA using its own private key that it generated in the first step.
-![[Pasted image 20240518145049.png]]
+![Pasted image 20240518145049](https://github.com/user-attachments/assets/249cb6e7-b44d-4b2c-9dd1-8b81417e011d)
 #### Creating client certificates "acting as admin users"
 - We should take care that the name given in the field `/CN=<NAME>` is the name that Kube Control client authenticates with and when you run the Kube Control command. So in the auditing logs and elsewhere, this is the name that you will see. So provide a relevant name in this field.
 - The signing request is done with the client private key created in the first step.
 - The signing is done by specifying  the CA certificate and the CA key.
 - To assign this client to a group with some privileges, we can do this by the `/O=<GROUP>`in the signing request.
-![[Pasted image 20240518145923.png]]
+![Pasted image 20240518145923](https://github.com/user-attachments/assets/db13c57b-00dc-42d5-b9a7-9aa9b0a176f8)
 #### Certificates for system components "client certificates"
 System components (Kube-scheduler, kube-controller-manager, kube-proxy) must have their name prefixed with the keyword `system`.
-![[Pasted image 20240518150920.png]]
+![Pasted image 20240518150920](https://github.com/user-attachments/assets/53aaa306-e909-4f56-b17b-c2d602150fcb)
 #### Using the client certificates (Administration management)
 Can be done either with the `curl` command or the kube-config file, stating the client certificate, the private key, & the CA certificate.
-![[Pasted image 20240518154227.png]]
+![Pasted image 20240518154227](https://github.com/user-attachments/assets/608210e7-8428-43a4-b208-a24efc69e6f2)
 #### Creating Server Certificates
 - Components as ETCD might be deployed as a cluster across multiple servers as in a high availability environment. Thus we must generate additional peer certificates to secure communication between the different members in the cluster.
 	After creating the peer certificates, specify them while starting the ETCD server.
-![[Pasted image 20240518165901.png]]
+![Pasted image 20240518165901](https://github.com/user-attachments/assets/7136e81a-590f-41f6-912b-9270c6c5da03)
 - Components as the Kube-API-Server might be referred to in many names, thus it may be required to state these names in the certificate.
 	This is done through specifying the alternate names in the OpenSSL config file unfer the `[alt_names]` section. 
-![[Pasted image 20240518165842.png]]
+![Pasted image 20240518165842](https://github.com/user-attachments/assets/0c644ce9-1a55-4421-a43d-7231ec745a91)
 -  Some server components may act as a client, as the kube-apiserver communicating to the ETCD and kubelet servers. 
 	The location of these certificates are passed in to the Kube API servers executable or service configuration file.
-![[Pasted image 20240518172049.png]]
+![Pasted image 20240518172049](https://github.com/user-attachments/assets/02b9a500-c3cb-4f9f-a4ec-f570e6ccbd95)
 - For Kubelet certificates, we need a key-certificate pair for each node in the cluster.
 	- The naming formats starts with `system` as indicated before, then the `node` followed by the name of the node. 
 	- The nodes must be added to groups with required privileges as discussed for admin users certificates. 
 	- Then we specify the root CA certificate, then the kubelet node certificates in the kubelet config file. 
-![[Pasted image 20240518172324.png]]
+![Pasted image 20240518172324](https://github.com/user-attachments/assets/e8a10964-755f-4377-bd30-337033d6c929)
 
  
 
@@ -423,7 +423,7 @@ Using a three column '.csv' file, of password, username, users ID. And then pass
 *Note:* This file also can optionally have a fourth column, specifying the user group.
 
 Or, If you set up your cluster using the Kubeadm tool, then you must modify the Kube-APIserver definition file. The Kubeadm tool will automatically restart the Kube API server once you update this file.
-![[Pasted image 20240515141701.png]]
+![Pasted image 20240515141701](https://github.com/user-attachments/assets/569e7fde-3eb0-420c-b6a4-af97674f1354)
 To authenticate using the user & password, we specify them in a curl command like this `curl -v -k https://master-node-ip:6443/api/vI/pods -u "userl:password123"`
 #### Using a Token file "Not the best practice"
 Similar to static password files, we can use a 3, or optionally a 4 column '.csv' file, but the first column is the token not the password.
