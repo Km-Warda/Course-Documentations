@@ -217,7 +217,7 @@ public class Student {
     }
 }
 ```
-# OOP - Dealing with objects 
+# OOP - Dealing with objects & Classes
 ### Inheritance
 Allows a **child class** (subclass) to acquire properties and behaviors from a **parent class** (superclass). This helps in code **reuse**, **extensibility**, and **maintainability**.  A class inherits from another class using the `extends` keyword.
 ```java
