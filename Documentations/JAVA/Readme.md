@@ -242,7 +242,7 @@ public class Main {
 - **Java does NOT support Multiple Inheritance** for one child
 - A better approach for this is **Multilevel Inheritance**: A child class inherits from another child class.
 - Multiple classes can inherit from the same parent. (**Hierarchical Inheritance**).
-##### Creating objects from a child class (`super()`)
+#### Creating objects from a child class (`super()`)
 - Upon creating an object from a class inheriting another class, the ***default constructor*** of the parent is inherited as well
 - Thus upon creating an object from the child class the default constructor of the parent is executed first, **then** the default constructor of the child class.
 - **Remember:** in case of no constructor, a default constructor is created implicitly with no outputs, showing nothing in the output screen
@@ -403,5 +403,74 @@ Number is 5
 ```
 AGE is $INTEGER
 Number is 5
+```
+
+#### Overwriting an inherited function
+When a **child class** has a method with the **same name and parameters** as a method in the **parent class**, the **child method overrides** the **parent method**.
+- Can be used to **provide a specific implementation** in the child class.
+- The **access modifier** of the **overriding method** cannot be **more restrictive** than the **parent method**.
+- The **`@Override` annotation** is optional but recommended to **indicate the intention**.
+```java
+class Parent {
+    void show() {
+        System.out.println("Parent method");
+    }
+}
+class Child extends Parent {
+    @Override
+    void show() {
+        System.out.println("Child method");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        obj.show();  // Calls the overridden method in the child class
+    }
+}
+
+// OUTPUT :
+// Child method
+```
+- If both functions are required, we can use `super().<METHOD_NAME>;` to call the parent method.
+```java
+class Parent {
+    void show() {
+        System.out.println("Parent method");
+    }
+}
+
+class Child extends Parent {
+    @Override
+    void show() {
+        super.show();  // Calls the parent method
+        System.out.println("Child method");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        obj.show();
+    }
+}
+
+// OUTPUT :
+// Parent method
+// Child method
+```
+#### Abstract Methods & Abstract Classes
+An **abstract method** is a method that **does not have a body** (no implementation) and is meant to be **overridden** in **subclasses**.
+- **Subclasses** that **inherit** an abstract class **must implement** all **abstract methods**, or they will also be considered **abstract**.
+- The **class containing an abstract method** must also be declared as **abstract**
+- You **cannot create objects** from an **abstract class**. 
+```java
+abstract class Class {
+    abstract void fun01();  // Abstract method with no body or curled brackets
+    void fun02() {  
+    System.out.println("Text");  // normal method
+	}
+}
 ```
 
