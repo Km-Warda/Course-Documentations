@@ -217,7 +217,8 @@ public class Student {
     }
 }
 ```
-### Inheritance
+## OOP - Dealing with objects 
+#### Inheritance
 Allows a **child class** (subclass) to acquire properties and behaviors from a **parent class** (superclass). This helps in code **reuse**, **extensibility**, and **maintainability**.  A class inherits from another class using the `extends` keyword.
 ```java
 class Parent {
@@ -460,6 +461,36 @@ public class Main {
 // Parent method
 // Child method
 ```
+#### Final Classes (Prohibiting Inheritance)
+A **final class** is a class that **cannot be extended (inherited)** by any other class.
+```java
+final class DBConnection {
+    void connect() {
+        System.out.println("Connecting to DB");
+    }
+}
+
+// If we tried creating a child class from this class like so, Code exits with an error (Cannot inherit from final class)
+
+// class extends CustomConnection {}  
+```
+#### Final Methods (Prohibiting Overwriting) 
+A **final method** is a method that **cannot be overridden** by any **subclass**.
+```java
+class DBConnection {
+    final void connect() {
+        System.out.println("Connecting to DB");
+    }
+}
+
+class CustomConnection extends DBConnection {
+//     If we tried overwriting the method like so, Code exits with an error (cannot overwrite a final method)
+//     void connect() {
+//         System.out.println("Trying to override the connection");
+//     }
+}
+```
+
 #### Abstract Methods & Abstract Classes
 An **abstract method** is a method that **does not have a body** (no implementation) and is meant to be **overridden** in **subclasses**.
 - **Subclasses** that **inherit** an abstract class **must implement** all **abstract methods**, or they will also be considered **abstract**.
@@ -473,4 +504,46 @@ abstract class Class {
 	}
 }
 ```
+#### Interface Classes 
+An**interface Class** contains **abstract methods** (methods without a body) and **constants**.
+- An interface **cannot contain method implementations** (only **method signatures**).
+- You **cannot create objects** from an **interface class**. 
+- Methods in an interface are **public and abstract** by default (no need for specifying).
+- Fields in an interface are **public**, **static**, and **final** by default.
+- A **class implements an interface** using the **`implements`** keyword, and **it must override all interface class methods**.
+- A class can **implement multiple interfaces**.
+```java
+interface Printable {
+    void print();     // Methods are public static final by default
+}
+interface Showable {
+    void show();      // Methods are public static final by default
+    int MAX_READERS = 10;  // Fields are public static final by default
+}
 
+class Document implements Printable, Showable {
+    public void print() {
+        System.out.println("Printing the document...");
+    }
+    public void show() {
+        System.out.println("Showing the document...");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Document doc = new Document();
+        doc.print();
+        doc.show();
+        System.out.println("Max Connections: " + Showable.MAX_READERS);  // Output: 10
+        
+//     If we tried overwriting the field like so, Code exits with an error (cannot assign a value to final variable)
+//     Config.MAX_READERS = 20;
+    }
+}
+
+// Output: 
+// Printing the document...
+// Showing the document...
+// Max Connections: 10
+```
