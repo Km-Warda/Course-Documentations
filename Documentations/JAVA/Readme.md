@@ -433,7 +433,7 @@ public class Main {
 // OUTPUT :
 // Child method
 ```
-- If both functions are required, we can use `super().<METHOD_NAME>;` to call the parent method.
+- If both methods are required, we can use `super().<METHOD_NAME>;` to call the parent method.
 ```java
 class Parent {
     void show() {
