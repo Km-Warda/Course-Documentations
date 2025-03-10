@@ -31,13 +31,13 @@ public class Student {
 # Basics
 ### Data Types
 1) `public` 
-	Publicly Accessible
+	Publicly accessible
 2) `private` 
-	Accessible within the class
-3) `protected` 
-	Accessible within the working directory
-4) `default`
-	Accessible within the working directory
+	Accessible **only within the class** it is defined in.
+3) `default`
+	Accessible **only within the same package** (working directory).
+4) `protected` 
+	Accessible **within the same package**, and **from subclasses** even if they are in **different packages**.
 ### Functions
 ##### Printing
 Printing Strings has to be inside ***double*** quotation marks.
@@ -147,7 +147,7 @@ public class Custom {
         System.out.println("Number is " + x);  
     }  
 }
-------
+// ------
 public class Main {
     public static void main(String[] args) {
         Custom obj = new Custom(); // Calls the printed line
@@ -156,7 +156,7 @@ public class Main {
 ```
 ##### 2) Parameterized Constructor
 - Allows passing arguments to initialize object properties with custom values.
-- If existed, it will be considered the default constructor.
+- If existed, it will function as the default constructor.
 ```java
 public class Custom {  
     int x;  
@@ -165,7 +165,7 @@ public class Custom {
         System.out.println("Value of x: " + x);  
     }  
 }
-----
+// ----
 public class Main {  
     public static void main(String[] args) {  
         Custom obj = new Custom("10");  // Calls the printed line with the given argument "10"
@@ -242,3 +242,165 @@ public class Main {
 - **Java does NOT support Multiple Inheritance** for one child
 - A better approach for this is **Multilevel Inheritance**: A child class inherits from another child class.
 - Multiple classes can inherit from the same parent. (**Hierarchical Inheritance**).
+##### Creating objects from a child class (`super()`)
+- Upon creating an object from a class inheriting another class, the ***default constructor*** of the parent is inherited as well
+- Thus upon creating an object from the child class the default constructor of the parent is executed first, **then** the default constructor of the child class.
+- **Remember:** in case of no constructor, a default constructor is created implicitly with no outputs, showing nothing in the output screen
+```java
+class Parent {
+    // Default constructor of the parent class
+    Parent() {
+        System.out.println("Parent class constructor");
+    }
+}
+class Child extends Parent {
+    // Default constructor of the child class
+    Child() {
+        System.out.println("Child class constructor");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Creating an object from the child class
+        Child obj = new Child();
+    }
+}
+
+
+// OUTPUT :
+// Parent class constructor  
+// Child class constructor 
+```
+
+- The `super()` keyword in Java is used to **refer to the parent class** (also called the superclass). It is commonly used in **inheritance** to access the **parent class’s methods, variables, or constructors**.
+- it is **implicitly called** at the beginning of the child constructor
+
+- If the **parent class** has a **parameterized constructor** **without** a **default constructor**, the **child class constructor** will fail because it implicitly tries to call the **unexisting default constructor** of the parent ❎
+
+```java
+class Parent {
+    Parent(String name) {
+        System.out.println("Hello, " + name);
+    }
+}
+class Child extends Parent {
+    Child() {
+        super();  // Sending a call to parent default constructor (ERROR)
+        System.out.println("Child class constructor");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+    }
+}
+
+
+//  ERROR (CAN'T FIND PARENT DEFAULT CONSTRUCTOR)
+```
+
+- Adding a default constructor will call it and ignore the desired existing one.
+```java
+class Parent {
+    Parent() {
+        System.out.println("Default Parent constructor");
+    }
+
+    Parent(String name) {
+        System.out.println("Hello, " + name);
+    }
+}
+class Child extends Parent {
+    Child() {
+        super();  // Sending a call to parent default constructor (Ignoring the desired one)
+        System.out.println("Child class constructor");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+    }
+}
+
+
+// OUTPUT :
+// Default Parent constructor 
+// Child class constructor  
+```
+
+- Simply editing the `super()` keyword to call the **desired constructor** would fix the issue ✅
+```java
+class Parent {
+	// No default constructor, no change if it existed (ignored as we called a specific constructor)
+    Parent(String name) {
+        System.out.println("Hello, " + name);
+    }
+}
+class Child extends Parent {
+    Child() {
+        super("Alex");  // Explicitly call the desired parent constructor
+        System.out.println("Child class constructor");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+    }
+}
+
+
+// OUTPUT :
+// Hello, Alex  
+// Child class constructor  
+```
+
+***Example For better understanding;***
+```java
+class Parent {
+	Parent() {
+        System.out.println("Default Parent constructor");
+    }
+    Parent(String name) {
+        System.out.println("Hello, " + name);
+    }
+    Parent(String age, int x) {
+        System.out.println("AGE is " + x);
+    }
+}
+class Child extends Parent {
+    Child() {
+        super("Alex");  // Explicitly call the desired parent constructor
+        System.out.println("Child class constructor");
+    }
+    Child(int z) {
+   // $ super();   // Created implicitly
+	    System.out.println("Number is " + z);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child(5);
+    }
+}
+// OUTPUT :
+// Default Parent constructor
+// Number is 5
+```
+- In the previous example, the parameterized constructor of the class `Child` was called; as it had a superclass, the constructor of the superclass called in `super` was initiated first.
+- No mentioning of `super` in the called `Child` Constructor resulted in implicitly creating a default `super();` calling the default instructor
+- If the hashed line (Marked with $)  was replaced with `super(<STRING>);` then the output would be:
+```
+"Hello, " + $STRING
+Number is 5
+```
+- If the hashed line (Marked with $)  was replaced with `super(<STRING>, <INTEGER>);` then the output would be
+```
+"AGE is < <INTEGER> > 
+Number is 5
+```
+
