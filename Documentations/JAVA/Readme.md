@@ -401,7 +401,7 @@ Number is 5
 ```
 - If the hashed line (Marked with $)  was replaced with `super(<STRING>, <INTEGER>);` then the output would be
 ```
-"AGE is $INTEGER
+AGE is $INTEGER
 Number is 5
 ```
 
