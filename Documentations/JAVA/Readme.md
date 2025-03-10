@@ -217,8 +217,8 @@ public class Student {
     }
 }
 ```
-## OOP - Dealing with objects 
-#### Inheritance
+# OOP - Dealing with objects 
+### Inheritance
 Allows a **child class** (subclass) to acquire properties and behaviors from a **parent class** (superclass). This helps in code **reuse**, **extensibility**, and **maintainability**.  A class inherits from another class using the `extends` keyword.
 ```java
 class Parent {
@@ -243,7 +243,7 @@ public class Main {
 - **Java does NOT support Multiple Inheritance** for one child
 - A better approach for this is **Multilevel Inheritance**: A child class inherits from another child class.
 - Multiple classes can inherit from the same parent. (**Hierarchical Inheritance**).
-#### Creating objects from a child class (`super()`)
+### Creating objects from a child class (`super()`)
 - Upon creating an object from a class inheriting another class, the ***default constructor*** of the parent is inherited as well
 - Thus upon creating an object from the child class the default constructor of the parent is executed first, **then** the default constructor of the child class.
 - **Remember:** in case of no constructor, a default constructor is created implicitly with no outputs, showing nothing in the output screen
@@ -406,7 +406,7 @@ AGE is $INTEGER
 Number is 5
 ```
 
-#### Overwriting an inherited function
+### Overwriting an inherited function
 When a **child class** has a method with the **same name and parameters** as a method in the **parent class**, the **child method overrides** the **parent method**.
 - Can be used to **provide a specific implementation** in the child class.
 - The **access modifier** of the **overriding method** cannot be **more restrictive** than the **parent method**.
@@ -461,7 +461,7 @@ public class Main {
 // Parent method
 // Child method
 ```
-#### Final Classes (Prohibiting Inheritance)
+### Final Classes (Prohibiting Inheritance)
 A **final class** is a class that **cannot be extended (inherited)** by any other class.
 ```java
 final class DBConnection {
@@ -474,7 +474,7 @@ final class DBConnection {
 
 // class extends CustomConnection {}  
 ```
-#### Final Methods (Prohibiting Overwriting) 
+### Final Methods (Prohibiting Overwriting) 
 A **final method** is a method that **cannot be overridden** by any **subclass**.
 ```java
 class DBConnection {
@@ -491,7 +491,7 @@ class CustomConnection extends DBConnection {
 }
 ```
 
-#### Abstract Methods & Abstract Classes
+### Abstract Methods & Abstract Classes
 An **abstract method** is a method that **does not have a body** (no implementation) and is meant to be **overridden** in **subclasses**.
 - **Subclasses** that **inherit** an abstract class **must implement** all **abstract methods**, or they will also be considered **abstract**.
 - The **class containing an abstract method** must also be declared as **abstract**
@@ -504,7 +504,7 @@ abstract class Class {
 	}
 }
 ```
-#### Interface Classes 
+### Interface Classes 
 An**interface Class** contains **abstract methods** (methods without a body) and **constants**.
 - An interface **cannot contain method implementations** (only **method signatures**).
 - You **cannot create objects** from an **interface class**. 
