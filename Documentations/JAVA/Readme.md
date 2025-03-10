@@ -29,7 +29,7 @@ public class Student {
 ```
 ***Note:*** Standard practice for object naming is to have lower case letters, and with the same name as the class, while the class starts with an upper case letter `Student student = new Student()`
 # Basics
-### Data Types
+### Access Modifiers
 1) `public` 
 	Publicly accessible
 2) `private` 
@@ -387,6 +387,7 @@ public class Main {
         Child obj = new Child(5);
     }
 }
+
 // OUTPUT :
 // Default Parent constructor
 // Number is 5
@@ -395,12 +396,12 @@ public class Main {
 - No mentioning of `super` in the called `Child` Constructor resulted in implicitly creating a default `super();` calling the default instructor
 - If the hashed line (Marked with $)  was replaced with `super(<STRING>);` then the output would be:
 ```
-"Hello, " + $STRING
+Hello, $STRING
 Number is 5
 ```
 - If the hashed line (Marked with $)  was replaced with `super(<STRING>, <INTEGER>);` then the output would be
 ```
-"AGE is < <INTEGER> > 
+"AGE is $INTEGER
 Number is 5
 ```
 
