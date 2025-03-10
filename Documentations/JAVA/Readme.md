@@ -505,7 +505,7 @@ abstract class Class {
 }
 ```
 ### Interface Classes 
-An**interface Class** contains **abstract methods** (methods without a body) and **constants**.
+An **interface Class** contains **abstract methods** (methods without a body) and **constants**.
 - An interface **cannot contain method implementations** (only **method signatures**).
 - You **cannot create objects** from an **interface class**. 
 - Methods in an interface are **public and abstract** by default (no need for specifying).
