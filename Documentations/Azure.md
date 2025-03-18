@@ -1,12 +1,11 @@
 # VM Availability  (VM SLA)
-![[Pasted image 20241203142538.png]]
+![Pasted image 20241203142538](https://github.com/user-attachments/assets/2421553a-0bf6-47f8-8f2e-56f1fda044dd)
 
 ##### Fault Domain
 ##### Update Domain
 ##### Availability Sets
 ##### Availability Zones
-![[Pasted image 20241215094507.png]]
-
+![Pasted image 20241215094507](https://github.com/user-attachments/assets/8db19f22-b865-4a2f-a0e8-fe4f0c1f0282)
 
 # Scaling
 Scale Set
@@ -32,7 +31,7 @@ Azure container Instance (same as ECS)
 Azure Kubernetes Service (same as EKS)
 
 # Azure functions Cold start issue
-![[Pasted image 20241203155732.png]]
+![Pasted image 20241203155732](https://github.com/user-attachments/assets/e7afa02b-4993-42c6-8e29-fd4f80b5694f)
 ## Functions Plans
 - Consumption Plan: 
 	- Pay only for what you actually use
@@ -53,14 +52,14 @@ Azure Kubernetes Service (same as EKS)
 	- Make sure Always On setting in the App Service is activated to avoid disabling functions
 	- No Auto-Scale is the major downside
 
-![[Pasted image 20241203160557.png]]
-![[Pasted image 20241203161035.png]]
+![Pasted image 20241203160557](https://github.com/user-attachments/assets/5856d872-d9e1-402d-91d3-1499dae63cbf)
+![Pasted image 20241203161035](https://github.com/user-attachments/assets/cf028f9c-4cbb-4986-b85f-d11053e92e0b)
 # Load Balancer
 Operates at layer 4 (Network layer)
-![[Pasted image 20241208155944.png]]
+![Pasted image 20241208155944](https://github.com/user-attachments/assets/feebd8b4-87fa-499e-8b0f-ad95e790ca01)
 # Application Gateway
 Operates at layer 7 (Application layer)
-![[Pasted image 20241208162429.png]]
+![Pasted image 20241208162429](https://github.com/user-attachments/assets/b2b53ab3-1717-43b8-86f1-94594a66446b)
 It has two types
 - Standard_V2
 - WAF_V2 (Additional WAF, & double the price)
@@ -70,7 +69,7 @@ It has two types
 - Protection rules based on OWASP Core Rule Set
 - Updates continuously
 - Works in Detection or Prevention mode
-![[Pasted image 20241208163032.png]]
+![Pasted image 20241208163032](https://github.com/user-attachments/assets/0e2fbe4d-2e0e-40e1-a073-2e29fba0d06f)
 # VM Security 
 1) JIT (Just in time) access
 2) VPN
@@ -86,14 +85,14 @@ Sometimes these resources are accessed only from resources in the cloud (i.e.. D
 	• Although the resource still has a public IP
 • Access from the internet can be blocked
 • Is free!
-![[Pasted image 20241208131447.png]]
+![Pasted image 20241208131447](https://github.com/user-attachments/assets/5b918c29-6a69-4ffe-b063-e97466e6c8bb)
 
 ### Private Links
 Similar to service endpoints, a solution to the same problem
 - Not free
 - The traffic doesn't leave the VNet, unlike service endpoints, which leaves the VNet but uses azure network.
 
-![[Pasted image 20241208132100.png]]
+![Pasted image 20241208132100](https://github.com/user-attachments/assets/de52d5eb-b6f3-4895-8e11-e0d304f566ac)
 # Databases & Storages
 ## Azure SQL Database
 ##### Features
@@ -231,15 +230,15 @@ Backup retention period:
 - NoSQL DB - Eventual consistency: Call returns immediately, commit in replicas happens later (Low latency)
 ***Cosmos DB has 5 consistency levels***: 
 - Strong (As in regular relational DB)
-	![[Pasted image 20241209133854.png]]
+	![Pasted image 20241209133854](https://github.com/user-attachments/assets/6bda6020-6770-477c-94e1-a76a09e2f2b5)
 - Bounded Staleness
-	![[Pasted image 20241209133926.png]]
+	![Pasted image 20241209133926](https://github.com/user-attachments/assets/0becf7f6-7578-448b-887c-270ac8835690)
 - Session
-	![[Pasted image 20241209134341.png]]
+	![Pasted image 20241209134341](https://github.com/user-attachments/assets/4a56bea0-2c79-4f3d-9017-a7b8e6f007e4)
 - Consistent Prefix
-	![[Pasted image 20241209134125.png]]
+	![Pasted image 20241209134125](https://github.com/user-attachments/assets/440306d9-0745-4b7d-9360-d7e8710b09ba)
 - Eventual (As in regular NoSQL DB)
-	![[Pasted image 20241209134210.png]]
+	![Pasted image 20241209134210](https://github.com/user-attachments/assets/f8411d0e-9b4a-4255-921d-14c8464d1ac3)
 
 ***Note:*** Cosmos DB consistency level is configured on the account level, & can be *relaxed to lower consistency* on the request level.
 ##### Operations:
@@ -307,16 +306,16 @@ Based on:
 - Secure communication (TLS)
 - Data encrypted by default
 ##### Storage Tiers
-![[Pasted image 20241209144820.png]]
+![Pasted image 20241209144820](https://github.com/user-attachments/assets/71562867-fb60-40fb-95f0-7fc188cab03c)
 - Retrieval time is the same in Hot and Cool tiers
 - Archive tier does not support ZRS, GRS and RA-GRS redundancy
 - Using SLA improves to 99.99% (Hot) and 99.9% (cool)
 - Tier is set at account level, can be modified per blob
 - Moving between tiers can be automated by lifecycle rules
 ##### Redundancy
-![[Pasted image 20241209144616.png]]
+![Pasted image 20241209144616](https://github.com/user-attachments/assets/81234e7a-4961-4416-a35f-6fcb2c242fd5)
 ## Selecting the right storage solution
-![[Pasted image 20241209151014.png]] 
+![Pasted image 20241209151014](https://github.com/user-attachments/assets/90c04f47-b511-472e-bbc6-b547a693a363)
 
 # Messaging 
 ## Storage Queue
@@ -339,8 +338,8 @@ Based on:
 	- 5,000 events / sec / topic
 - Latency: Subsecond end-to-end latency in the 99th percentile
 - Pricing is based on number of operations only, & first 100k operations are free
-![[Pasted image 20241211130304.png]]
-![[Pasted image 20241211130149.png]]
+![Pasted image 20241211130304](https://github.com/user-attachments/assets/21f70339-e476-4edf-b7e1-ab38c75415c1)
+![Pasted image 20241211130149](https://github.com/user-attachments/assets/9216e9cf-9110-4127-b5ba-e1a91e857d56)
 ## Service Bus
 ##### Features:
 - Supports point-to-point (Queue) and pub/sub (Topic) scenarios. "Combines both previous two scenarios"
@@ -364,7 +363,7 @@ Based on:
 - Basic: Only queues & scheduled messages, no topics
 - Standard: Made to fit almost any requirement
 - Premium: For apps that need larger message size & increased security using resource isolation. 
-![[Pasted image 20241211153300.png]]
+![Pasted image 20241211153300](https://github.com/user-attachments/assets/0330cbcc-1aa9-43a3-b5a7-9c7df3997b0d)
 ##### Pricing
 Based on:
 	- Tier
@@ -374,7 +373,7 @@ Based on:
 		***Note***: No "messaging" in the description
 - It's mainly a managed Kafka implementation
 - Can receive millions of events per second
-![[Pasted image 20241211154844.png]]
+<img width="759" alt="Pasted image 20241211154844" src="https://github.com/user-attachments/assets/d8106ab9-1d6f-4e99-b85c-5c078626ac10" />
 ##### Pricing:
 Based on:
 - Tier
@@ -385,7 +384,7 @@ Based on:
 	- Egress (Output) - 2MB/sec or 4096 events/sec
 	***Note:*** TUs are Repurchased, & billed by the hour
 ## Selecting the right messaging solution
-![[Pasted image 20241211163312.png]]
+![Pasted image 20241211163312](https://github.com/user-attachments/assets/0c3fc822-0bd6-4d24-b2f0-66d90ed2b31c)
 # Azure AD
 Central identity and access management cloud service. Used to manage access to thousands of apps.
 ### Tenants
@@ -395,10 +394,10 @@ Central identity and access management cloud service. Used to manage access to t
 - It is NOT part of the subscription hierarchy, thus it's not a resource.
 	- Exists beside the subscription
 	- For new subscriptions, a new tenant is created automatically
-![[Pasted image 20241212104529.png]]
+![Pasted image 20241212104529](https://github.com/user-attachments/assets/25a5065c-d3c4-4940-af8d-1688c9175810)
 ## Role Based Access Control (RBAC)
 Create roles with specific authorization policies, & directly assign them to users, or remove the role from the user.
-![[Pasted image 20241212115730.png]]
+![Pasted image 20241212115730](https://github.com/user-attachments/assets/9bce6107-1283-4f92-a3e4-a2329f9117ec)
 ### Users & Groups
 - Manages and stores the users that are part of the tenant
 - Groups the users in Groups
@@ -423,13 +422,13 @@ It's always better to assign roles to groups and not individual users for easier
 - User assigned:
 	Managed by the user. Can be assigned to multiple resources, not tied to any lifecycle
 ##### Azure AD Licenses
-![[Pasted image 20241212113228.png]]
+![Pasted image 20241212113228](https://github.com/user-attachments/assets/50325eb3-5643-4223-94c7-7f23d9f5470f)
 ## Azure AD B2C
 - Identity-as-a-service for your application
 - A Business-to-Customer (B2C) service
 - Enables integrating identity services in your app
 ##### Azure AD vs Azure AD B2C
-![[Pasted image 20241212131918.png]]
+![Pasted image 20241212131918](https://github.com/user-attachments/assets/d1579d60-8b02-4848-ad22-eb0be43878f6)
 
 - Basically, it's a service used for identity authentication related ACTIONS, it doesn't hold the users details.
 - ***Note:*** Azure AD B2C is quite complex to set up, and has a lot of moving parts
@@ -456,7 +455,7 @@ Monitoring is based on two types of data:
 	Events that occurred in the system, can be textual & numeric
 	- Examples: System started, Error occurred
 Monitoring section in most resources:
-![[Pasted image 20241212142504.png]]
+![Pasted image 20241212142504](https://github.com/user-attachments/assets/08a61828-319b-4677-ad80-8fc404e6a836)
 ## Insights
 - A collection of metrics, statistics and insights about the resource
 - Specific to resource type
@@ -464,20 +463,20 @@ Monitoring section in most resources:
 - Code-based services (App Services, apps on VMs) can integrate Application Insights into the code and gain a lot of data about app usage, performance, etc.
 
 - Insights of a storage account, note the failures, performance, availability, and capacity options.
-![[Pasted image 20241212144619.png]]
+![Pasted image 20241212144619](https://github.com/user-attachments/assets/29aba8c9-5bbe-4f82-8a26-254b062b73fd)
 - Another example for insights for a Virtual machine, notice how the metrics are generated automatically and specified for each type of resource.
-![[Pasted image 20241212144804.png]]
+![Pasted image 20241212144804](https://github.com/user-attachments/assets/d7b668cd-368a-4341-bee7-e75df899b66c)
 ## Monitoring Dashboard
 When using the monitoring section in a resource page, the filters we set for viewing won't be saving & will need to be reentered upon each visit.
 - Monitoring Metrics are saved in dashboards:
-![[Pasted image 20241212143208.png]]
+![Pasted image 20241212143208](https://github.com/user-attachments/assets/19dda924-a8f1-4cf6-9793-9cb29c7009dc)
 
 We can customize the dashboard as we like.
 - Customizing a Dashboard:  
-![[Pasted image 20241212143330.png]]
+![Pasted image 20241212143330](https://github.com/user-attachments/assets/27db9a59-45f7-401b-ac5f-e966c4d3d7f6)
 
 - Another Ready dashboard
-![[Pasted image 20241212143444.png]]
+![Pasted image 20241212143444](https://github.com/user-attachments/assets/39ed11d4-ec85-45fa-8361-20313db0e92f)
 ## Alerts
 ##### Alert components
 - Condition: When to trigger the alert (i.e.. CPU goes above 90%)
