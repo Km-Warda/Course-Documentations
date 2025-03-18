@@ -373,7 +373,8 @@ Based on:
 		***Note***: No "messaging" in the description
 - It's mainly a managed Kafka implementation
 - Can receive millions of events per second
-<img width="759" alt="Pasted image 20241211154844" src="https://github.com/user-attachments/assets/d8106ab9-1d6f-4e99-b85c-5c078626ac10" />
+<img width="759" alt="Pasted image 20241211154844" src="https://github.com/user-attachments/assets/70c6091b-1661-4e2e-809e-000c94027a97" />
+
 ##### Pricing:
 Based on:
 - Tier
@@ -550,7 +551,7 @@ We need database that always syncs with the secondary region, databases capable 
 - Azure MySQL has backup occurrence every 5 minutes.
 - If we replicated the backup to another region, we can later create a new Azure MySQL DB in the second region when needed.
 - This is much cheaper because we don't have an active DB.
-![[Pasted image 20241212160916.png]]
+![Pasted image 20241212160916](https://github.com/user-attachments/assets/d89693c4-145f-450c-8efb-d7ac173685a9)
 ### DR of Compute
 ##### RTO=0 (no downtime in case of disaster)
 - Full replication of all necessary resources.
@@ -572,7 +573,7 @@ We need database that always syncs with the secondary region, databases capable 
 - Provides high availability and responsiveness
 - Pricing is *majorly* based on DNS queries 
 ##### Used algorithms for routing:
-![[Pasted image 20241212162137.png]]
+![Pasted image 20241212162137](https://github.com/user-attachments/assets/2abf68a1-cd96-4741-824c-8a0f18d71389)
 **Note:** Priority algorithm is the one that is mostly used for DR re-routing
 #### Front Door
 - Global entry point for web apps
