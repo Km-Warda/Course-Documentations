@@ -493,9 +493,9 @@ class CustomConnection extends DBConnection {
 
 ### Abstract Methods & Abstract Classes
 An **abstract method** is a method that **does not have a body** (no implementation) and is meant to be **overridden** in **subclasses**.
-- **Subclasses** that **inherit** an abstract class **must implement** all **abstract methods**, or they will also be considered **abstract**.
 - The **class containing an abstract method** must also be declared as **abstract**
 - You **cannot create objects** from an **abstract class**. 
+- **Subclasses** that **inherit** an abstract class **must implement** all **abstract methods**, or they will also be considered **abstract**.
 ```java
 abstract class Class {
     abstract void fun01();  // Abstract method with no body or curled brackets
@@ -504,6 +504,68 @@ abstract class Class {
 	}
 }
 ```
+
+### Static
+The keyword `static` members are shared among all objects of that class, and its purpose is to make members belong to the class itself.
+#### Static Variables
+- Shared among all instances of the class.
+- Only one copy in the memory exists regardless of how many objects are created.
+- All objects **share the same static variable**.
+- Accessed using the **class name** rather than an object.
+
+```java
+class Counter {
+    static int count = 0;  // Variable not reset for each object
+    Counter() {
+        count++;
+        System.out.println("Count: " + count);
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        new Counter();                     // Count: 1
+        new Counter();                     // Count: 2
+        new Counter();                     // Count: 3
+        Counter counter4 = new Counter();  // Count: 4
+        Counter counter5 = new Counter();  // Count: 5
+        Counter counter6 = new Counter();  // Count: 6
+    }
+}
+
+
+// Output: 
+// Count: 1
+// Count: 2
+// Count: 3
+// Count: 4
+// Count: 5
+// Count: 6
+```
+***Note:*** Variables are **static final** by default
+#### Static Methods
+- Can be called **without creating an instance** of the class.
+- Commonly used for **utility or helper methods**.
+- Accessed using the **class name** rather than an object.
+- Static methods **can't be overwritten**.
+- They can **NOT be inherited**.
+```java
+class Math {
+    static int add(int a, int b) {
+        return a + b;
+    }
+}
+
+public class Main {  
+    public static void main(String[] args) {  
+        System.out.println("Sum: " +Math.add(5, 3));   // No object creation needed  
+    }  
+}
+
+
+// Output: 
+// Sum: 8
+```
+
 ### Interface Classes 
 An **interface Class** contains **abstract methods** (methods without a body) and **constants**.
 - An interface **cannot contain method implementations** (only **method signatures**).
@@ -514,10 +576,10 @@ An **interface Class** contains **abstract methods** (methods without a body) an
 - A class can **implement multiple interfaces**.
 ```java
 interface Printable {
-    void print();     // Methods are public static final by default
+    void print();     // Methods are public abstract by default
 }
 interface Showable {
-    void show();      // Methods are public static final by default
+    void show();      // Methods are public abstract by default
     int MAX_READERS = 10;  // Fields are public static final by default
 }
 
@@ -546,4 +608,348 @@ public class Main {
 // Printing the document...
 // Showing the document...
 // Max Connections: 10
+```
+***Notes:*** 
+Interface Classes have methods that are public abstract by default (no specifications), however, it may have static functions for **utility** or **helper methods** that are related to the interface itself, not to any instance of a class that implements it.
+- We can change the default `public abstract` methods to be `default` to act as regular methods, with the ability to be inherited or overwritten, and to have implementation.
+#### Using Interfaces with Multiple Implementations (Interface referencing when creating an object)
+In case of creating objects for multiple classes implementing the same interface, we can refer to the name of the interface name:
+`java <InterfaceName> <objectName> = new <ClassName>();`
+- This is useful when multiple classes implement the **same interface**.
+- By referencing the object as an **interface type**, we gain flexibility in swapping out implementations without changing the code structure.
+- When creating an object, the object have access to methods and variables from the member which created it (Class or interface)
+```java
+interface AnimalSounds {  
+    void sound();  
+}  
+  
+class Dog implements AnimalSounds {  
+    public void sound() {  
+        System.out.println("Bark");  
+    }  
+    public void name() {  
+        System.out.println("Dog");  
+    }  
+}  
+class Cat implements AnimalSounds {  
+    public void sound() {  
+        System.out.println("Meow");  
+    }  
+    public void name() {  
+        System.out.println("Cat");  
+    }  
+}
+
+public class Main {  
+    public static void main(String[] args) {  
+        Dog dogObj = new Dog();  
+        AnimalSounds catObj = new Cat();  
+  
+        dogObj.sound();  
+        dogObj.name();  // Objects call methods in the class  
+  
+        catObj.sound();  // Objects call methods in the interface on
+    }  
+}
+
+// Output: 
+// Bark
+// Dog
+// Meow
+```
+
+# Data Structures
+### Map
+- Stores **key-value pairs**
+- Keys are **unique**
+- Has 3 types of implementations, **HashMap**, **TreeMap**, or **LinkedHashMap**.
+#### HashMap
+- **No guaranteed order** of keys.
+- Allows one **null key** and multiple **null values**.
+- **Not synchronized** (not thread-safe).
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> hashMap = new HashMap<>();
+        hashMap.put("Apple", 1);
+        hashMap.put("Banana", 2);
+
+        System.out.println("HashMap: " + hashMap);
+    }
+}
+```
+#### LinkedHashMap
+- Maintains **insertion order** or **access order**.
+- **Slower than HashMap** but maintains **insertion order** (Important for caching).
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put("First", 10);
+        linkedHashMap.put("Second", 20);
+
+
+        System.out.println("LinkedHashMap: " + linkedHashMap);
+    }
+}
+```
+#### TreeMap
+- Maintains **natural ordering** or **custom comparator** ordering.
+- **Slower than HashMap** but **sorted** (Natural or custom sorting).
+```java
+import java.util.TreeMap;
+import java.util.Comparator;
+
+public class Main {
+    public static void main(String[] args) {
+        TreeMap<String, Integer> map = new TreeMap<>();
+        map.put("Banana", 3);
+        map.put("Apple", 5);
+        map.put("Cherry", 2);
+        
+        System.out.println("TreeMap: " + map); //  (Comparator.reverseOrder()) is an example of custom sorting
+    }
+}
+
+// // The Output will be sorted
+// OUTPUT:
+// TreeMap: {Apple=5, Banana=3, Cherry=2}
+```
+#### ConcurrentHashMap
+- Does **not allow null keys or values**.
+```java
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> concurrentMap = new ConcurrentHashMap<>();
+        concurrentMap.put("User1", 100);
+        concurrentMap.put("User2", 200);
+
+
+        // Printing the map contents
+        for (String key : concurrentMap.keySet()) {
+            System.out.println("Key: " + key + ", Value: " + concurrentMap.get(key));
+        }
+    }
+}
+
+```
+#### IdentityHashMap
+- Suitable for scenarios where **reference equality** is needed.
+- Same keys with different values are treated as different because of reference comparison
+```java
+import java.util.IdentityHashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<String, Integer> identityMap = new IdentityHashMap<>();
+        identityMap.put(new String("A"), 1);
+        identityMap.put(new String("A"), 2);
+
+
+        // Printing the map to show both keys exist
+        System.out.println("Map size: " + identityMap.size());
+        for (String key : identityMap.keySet()) {
+            System.out.println("Key: " + key + ", Value: " + identityMap.get(key));
+        }
+    }
+}
+// Both keys are treated as different because of reference comparison
+```
+
+### Fixed Array
+- Has a **predefined size** that cannot change after initialization.
+- Stores elements in **contiguous memory locations**.
+```java
+public class Main {
+    public static void main(String[] args) {
+        int[] numbers = new int[5];  // Creates an array of size 5
+
+        // Initializing array elements
+        numbers[0] = 10;
+        numbers[1] = 20;
+        numbers[2] = 30;
+        numbers[3] = 40;
+        numbers[4] = 50;
+        // You cannot directly add elements to an array after initialization.
+
+        // Printing array elements
+        for (int i = 0; i < numbers.length; i++) {
+            System.out.println("Element at index " + i + ": " + numbers[i]);
+        }
+    }
+}
+```
+#### Dynamic Array
+- Similar to a fixed array but can **grow or shrink in size** during runtime.
+```java
+import java.util.ArrayList;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<Integer> list = new ArrayList<>();
+	// list.add(index, element);
+        list.add(10); // added to the end of the list
+        list.add(2,20); // added to third item of index 2 of the list (shift the existing element to the right)
+
+        System.out.println("List elements: " + list);  // Output: [10, 20]
+    }
+}
+```
+#### Queue
+- A queue is a **First In, First Out (FIFO)** data structure.
+- Operations include **enqueue** (add) and **dequeue** (remove).
+- Efficient operations at both ends.
+```java
+import java.util.Queue;  
+import java.util.LinkedList;  
+  
+public class Main {  
+    public static void main(String[] args) {  
+        Queue<String> queue = new LinkedList<>();  
+        queue.add("Alice");  
+        queue.add("Bob");  
+  
+        String first = queue.remove();  // Removes and returns "Alice"  
+        System.out.println("First element removed: " + first);  // Alice  
+        System.out.println("Queue after removal: " + queue);    // [Bob]  
+    }
+```
+### Stack
+- A stack is a **Last In, First Out (LIFO)** data structure.
+- Elements are **pushed** onto the top and **popped** from the top.
+- Useful for **function call management**, **undo mechanisms**, and **expression evaluation**.
+- **Operations:**
+	- **Push:** Add an element to the top of the stack.
+	- **Pop:** Remove and return the element at the top.
+	- **Peek/Top:** View the top element without removing it.
+	- **IsEmpty:** Check if the stack is empty.
+	- **Size:** Get the number of elements in the stack.
+```java
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(5);
+        stack.push(10);
+        int top = stack.pop();  // Removes and returns 10
+
+        System.out.println("Top element removed: " + top);  // 10
+        System.out.println("Current stack: " + stack);      // [5]
+    }
+}
+```
+Another example:
+```java
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Stack<String> stack = new Stack<>();
+
+        // Push elements onto the stack
+        stack.push("Apple");
+        stack.push("Banana");
+        stack.push("Cherry");
+
+        // Peek at the top element
+        System.out.println("Top element: " + stack.peek());  // Cherry
+
+        // Pop an element from the stack
+        System.out.println("Popped: " + stack.pop());  // Cherry
+
+        // Check the size after popping
+        System.out.println("Size after pop: " + stack.size());  // 2
+
+        // Check if the stack is empty
+        System.out.println("Is empty: " + stack.isEmpty());  // false
+
+        // Print remaining elements
+        System.out.println("Stack: " + stack);  // [Apple, Banana]
+    }
+}
+
+// OUTPUT:
+// Top element: Cherry
+// Popped: Cherry
+// Size after pop: 2
+// Is empty: false
+// Stack: [Apple, Banana]
+```
+#### Deque (Double-Ended Queue)
+- Supports insertion and Deletion from Both Ends
+- Supports Both Stack and Queue Operations
+- No Capacity Restrictions
+- **Flexible Operations** and better performance (Can function as a **queue** or **stack**.)
+- Has two types:
+	- **Input-Restricted Deque**: Insertion is allowed at one end only, but deletion can occur from both ends. 
+	- **Output-Restricted Deque**: Deletion is allowed at one end only, but insertion can occur from both ends.
+```java
+import java.util.Deque;
+import java.util.ArrayDeque;
+
+public class Main {
+    public static void main(String[] args) {
+        Deque<String> deque = new ArrayDeque<>();
+
+        // Adding elements to the front and rear
+        deque.addFirst("Alice");
+        deque.addLast("Bob");
+        deque.addFirst("Eve");
+
+        // Printing the deque
+        System.out.println("Deque: " + deque);  // [Eve, Alice, Bob]
+
+        // Accessing elements
+        System.out.println("First: " + deque.getFirst());  // Eve
+        System.out.println("Last: " + deque.getLast());    // Bob
+
+        // Removing elements from both ends
+        deque.removeFirst();  // Removes "Eve"
+        deque.removeLast();   // Removes "Bob"
+        
+        System.out.println("Deque after removal: " + deque);  // [Alice]
+
+        // Stack operation
+        deque.push("Charlie");
+        deque.push("David");
+        System.out.println("Stack mode: " + deque);  // [David, Charlie, Alice]
+
+        // Queue operation
+        deque.addLast("Eve");
+        System.out.println("Queue mode: " + deque);  // [David, Charlie, Alice, Eve]
+
+        // Popping elements (like stack)
+        System.out.println("Popped: " + deque.pop());  // David
+        System.out.println("After pop: " + deque);     // [Charlie, Alice, Eve]
+    }
+}
+```
+***Note:*** `Stack` is considered **legacy** in Java. The recommended approach is to use `Deque` when you need stack-like behavior.
+#### Linked Lists
+- A linked list is a **sequential data structure** where each element, known as a **node**, points to the next node.
+- Nodes contain **data** and a **reference to the next node**.
+- No contiguous memory allocation, unlike arrays.
+- Suitable for **dynamic data management** and **frequent insertions/deletions**.
+```java
+class Node {
+    int data;      // Holds the value of the node
+    Node next;     // Reference to the next node in the linked list
+
+    // Constructor to initialize the node with data
+    Node(int data) {
+        this.data = data;
+        this.next = null;  // By default, the next node is null
+    }
+}
 ```
