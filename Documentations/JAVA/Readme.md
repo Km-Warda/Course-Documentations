@@ -766,6 +766,18 @@ public class Main {
 // Both keys are treated as different because of reference comparison
 ```
 
+### Set
+- No Duplicate Elements
+- No Indexing
+- No ordering (Except for (e.g., `LinkedHashSet` and `TreeSet`)
+```java
+Set<String> names = new HashSet<>();
+names.add("Alice");
+names.add("Bob");
+names.add("Alice");  // Duplicate, will be ignored
+System.out.println(names);  // Output: [Alice, Bob]
+
+```
 ### Fixed Array
 - Has a **predefined size** that cannot change after initialization.
 - Stores elements in **contiguous memory locations**.
@@ -953,3 +965,132 @@ class Node {
     }
 }
 ```
+
+### Hierarchy of Collection Framework
+The following shows an overview of Java collection, from which we can see the different interfaces and classes 
+- We can't instantiate an interface.
+- When Creating an object we can only instantiate an instance from a class.
+- If an interface is required, we can instantiate a class implementing the instance.
+![Pasted image 20250322125147](https://github.com/user-attachments/assets/128045f5-03b9-4748-ac61-02dd5b98f8fd)
+# Design Patterns
+### Singleton Pattern
+- Ensures that only one instance of the class is created.
+- The class has a `private` constructor and `private static` object
+- **Static Instance Variable:** Holds the single instance of the class.
+```java
+public class Class01 {   
+    private String name;  
+    public void setName(String name) {  
+        this.name = name;  
+    }  
+    public String getName() {  
+        return name;  
+    }  
+
+	// static object
+    private static Class01 obj;  
+    private Class01() {  }
+    public static Class01 createObject(){  
+        if (obj == null) {  
+            obj = new Class01();  
+            return obj;  
+        }  
+        return obj;  
+    }
+}
+```
+
+- The previous class has a private default constructor, thus preventing the creation of any objects.
+- The static method `createObject` is used to create objects without creating an instance of the class.
+- Last object created from the method will overwrite the static object `obj`.
+```java
+public class Main {  
+    public static void main(String[] args) {  
+        Class01 obj1 = Class01.createObject();  
+        obj1.setName("A");  
+        System.out.println(obj1.getName());  
+        
+	 // Overwriting the object
+        Class01 obj2 = Class01.createObject();  
+        obj2.setName("B");  
+	 // Testing the two objects
+        System.out.println(obj1.getName());  
+        System.out.println(obj2.getName());  
+  
+    }  
+}
+
+// OUTPUT:
+// AA
+// BB
+// BB
+```
+
+### IOC (Inversion of control)
+- A design principle used to reduce tight coupling between components.
+- The controller does not create instances of dependent services directly. Instead, the controller receives the service through an external source (like a constructor).
+```java
+public interface MyService {
+    void performAction();
+}
+// --------------------------
+public class Class01Service implements MyService {
+    @Override
+    public void performAction() {
+        System.out.println("Performing action in Class01Service");
+    }
+}
+
+public class Class02Service implements MyService {
+    @Override
+    public void performAction() {
+        System.out.println("Performing action in Class02Service");
+    }
+}
+
+public class Class03Service implements MyService {
+    @Override
+    public void performAction() {
+        System.out.println("Performing action in Class03Service");
+    }
+}
+
+// --------------------------
+public class MyController {
+    private MyService myService;
+
+	// Instead of tightly coupling the controller to a specific service class, we make it flexible by accepting any implementation of MyService. 
+    public MyController(MyService myService) {
+        this.myService = myService;
+    }
+
+    public void execute() {
+        myService.performAction();
+    }
+}
+// --------------------------
+
+public class Main {
+    public static void main(String[] args) {
+       
+		// Create the controller and pass the desired service
+        MyController controller = new MyController(new Class01Service());
+        controller.execute();
+
+
+        // Change the service without modifying the controller
+        controller = new MyController(new Class02Service());
+        controller.execute();
+
+        controller = new MyController(new Class03Service());
+        controller.execute();
+    }
+}
+
+
+// OUTPUT
+// Performing action in Class01Service
+// Performing action in Class02Service
+// Performing action in Class03Service
+```
+
