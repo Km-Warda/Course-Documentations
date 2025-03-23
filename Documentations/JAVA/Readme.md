@@ -573,6 +573,7 @@ An **interface Class** contains **abstract methods** (methods without a body) an
 - Methods in an interface are **public and abstract** by default (no need for specifying).
 - Fields in an interface are **public**, **static**, and **final** by default.
 - A **class implements an interface** using the **`implements`** keyword, and **it must override all interface class methods**.
+- When a class overrides an interface method, it has to be declared `public`
 - A class can **implement multiple interfaces**.
 ```java
 interface Printable {
@@ -1029,26 +1030,27 @@ public class Main {
 ### IOC (Inversion of control)
 - A design principle used to reduce tight coupling between components.
 - The controller does not create instances of dependent services directly. Instead, the controller receives the service through an external source (like a constructor).
+- To simplify, if we have multiple implementations for an interface, we can create a new class to control the usage of the implementing classes.
 ```java
-public interface MyService {
+public interface Interface01 {
     void performAction();
 }
 // --------------------------
-public class Class01Service implements MyService {
+public class Class01Service implements Interface01 {
     @Override
     public void performAction() {
         System.out.println("Performing action in Class01Service");
     }
 }
 
-public class Class02Service implements MyService {
+public class Class02Service implements Interface01 {
     @Override
     public void performAction() {
         System.out.println("Performing action in Class02Service");
     }
 }
 
-public class Class03Service implements MyService {
+public class Class03Service implements Interface01 {
     @Override
     public void performAction() {
         System.out.println("Performing action in Class03Service");
@@ -1057,15 +1059,15 @@ public class Class03Service implements MyService {
 
 // --------------------------
 public class MyController {
-    private MyService myService;
+    private Interface01 interface01;
 
 	// Instead of tightly coupling the controller to a specific service class, we make it flexible by accepting any implementation of MyService. 
-    public MyController(MyService myService) {
-        this.myService = myService;
+    public MyController(Interface01 interface01) {      // ---> Parameterized Constructor
+        this.interface01 = interface01;
     }
 
     public void execute() {
-        myService.performAction();
+        interface01.performAction();
     }
 }
 // --------------------------
