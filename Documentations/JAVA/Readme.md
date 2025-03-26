@@ -973,6 +973,120 @@ The following shows an overview of Java collection, from which we can see the di
 - When Creating an object we can only instantiate an instance from a class.
 - If an interface is required, we can instantiate a class implementing the instance.
 ![Pasted image 20250322125147](https://github.com/user-attachments/assets/128045f5-03b9-4748-ac61-02dd5b98f8fd)
+
+# Try-Catch Exception Handling
+Exception handling in Java is done using `try`, `catch`, `finally`, and `throw`. The purpose of handling exceptions is to prevent a program from crashing when an unexpected error occurs.
+```java
+try {
+    // Code that might cause an exception
+} catch (ExceptionType exceptionType) {
+    // Handle the exception
+} finally {
+    // (Optional) Code that will always execute
+}
+```
+
+- **Example:** An arithmetic error  handling.
+```java
+public class ExceptionExample {
+    public static void main(String[] args) {
+        try {
+            int result = 10 / 0;  // This will cause an ArithmeticException
+            System.out.println(result);
+        } catch (ArithmeticException arithmeticException) {
+            System.out.println("Cannot divide by zero!");
+        }
+        System.out.println("Program continues...");
+    }
+}
+```
+- **Multiple Catch Example:** Different catch for each exception.
+```java
+import java.util.Scanner;
+
+public class MultiCatchExample {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        try {
+            int[] numbers = {1, 2, 3};
+            System.out.print("Enter an index: ");
+		    int index = scanner.nextInt();
+		    
+		    System.out.print("Enter a number to divide by: ");		    
+		    int divisor = scanner.nextInt();
+		    
+		    System.out.println("Value at index: " + numbers[index]);
+		    System.out.println("Result of division: " + (10 / divisor));
+        } catch (ArithmeticException arithmeticException) {  // INPUT: <Index: 5>
+            System.out.println("Arithmetic Exception occurred.");
+        } catch (ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
+            System.out.println("Array Index Out of Bounds!"); // INPUT: <Divisor: 0>
+        } catch (Exception exception) {
+            System.out.println("Some other exception occurred."); // INPUT: <Index: qq>
+        }
+    }
+}
+```
+### `finally`
+- The block `finally` can be used to create a default execution that will always occur regardless of the exception.
+```java
+public class FinallyExample {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Inside try block");
+        } catch (Exception exception) {      // No Exception here, catch Ignored
+            System.out.println("Inside catch block");
+        } finally {                  // Always Executed
+            System.out.println("Finally block executes no matter what!");
+        }
+    }
+}
+
+// OUTPUT:
+// Inside try block
+// Finally block executes no matter what!
+```
+### `throw`
+- Custom Exceptions (Not Default Errors) can be done with `throw`, for example entry can't be less than 18.
+- The following is only ***an illustrative example*** which will make the application exit (***crashes***) with a custom exception message.
+- The exit indicates a new custom exception created, and now can be referred to in a method.
+```java
+public class ThrowExample {
+    public static void main(String[] args) {    // This is 
+        int age = 15;
+        if (age < 18) {
+            throw new IllegalArgumentException("Age must be 18 or above.");
+        }
+        System.out.println("Eligible to vote!");
+    }
+}
+
+// OUTPUT:
+// Exception in thread "main" java.lang.IllegalArgumentException: Age must be 18 or above.
+```
+- Declaring a new custom exception in a method:
+```java
+public class ThrowsExample {
+    static void checkAge(int age) throws Exception {
+        if (age < 18) {
+            throw new Exception("Underage not allowed!"); // Parameterized Constructor of the class Exception
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            checkAge(15);  // throw in the condition initialized
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage()); // Retrieves the message stored inside the exception object
+        }
+    }
+}
+
+// OUTPUT:
+// Underage not allowed!
+```
+
 # Design Patterns
 ### Singleton Pattern
 - Ensures that only one instance of the class is created.
