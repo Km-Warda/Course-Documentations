@@ -64,6 +64,7 @@ Notice that it has two metadata blocks, one for the replication controller, & th
 - The other difference is that ReplicaSets needs to select what pods it will manage. Thus a user input is required for the parameter  `selector`.
 - The ReplicaSets supports more `matchlabels` than the Replication Controller.
 #### ReplicaSet with YAML files
+- **The `selector` and the `template` CANNOT CONFLICT with each other, if a label existed in both it must be the same.**
 - The `matchlabels` refer to the labels of the chosen pods to be managed.  
 ![Pasted image 20240310154846](https://github.com/Km-Warda/Course-Documentations/assets/109697567/181c17a1-996e-401f-a9da-5ceb2789750f)
 
